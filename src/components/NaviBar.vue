@@ -30,7 +30,7 @@ Vue.component('navi-bar', {
 })
 
 export default {
-
+	name: 'NaviBar'
 }
 </script>
 

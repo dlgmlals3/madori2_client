@@ -6,12 +6,13 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import axios from 'axios'
 import NaviBar from './NaviBar'
 
 export default {
-  props: ['id'],
   name: 'RoomDetail',
+  props: ['id'],
   data () {
     return {
       room: {
@@ -54,7 +55,7 @@ export default {
     }
   },
   created () {
-    const ROOM_DETAIL_REQUEST = 'http://218.38.52.30:3000/room/' + this.id
+    const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/room/' + this.id
     console.log('url : ' + ROOM_DETAIL_REQUEST)
     this.getRoomDetail(ROOM_DETAIL_REQUEST)
   },

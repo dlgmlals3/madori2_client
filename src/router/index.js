@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import HelloWorld from '@/components/HelloWorld'
+import Login from '@/components/Login'
 import Main from '@/components/Main'
 import RoomList from '@/components/RoomList'
 import RoomDetail from '@/components/RoomDetail'
@@ -13,7 +13,7 @@ export default new VueRouter({
     {
       path: '/',
       name: 'Login',
-      component: HelloWorld
+      component: Login
     },
     {
       path: '/main',

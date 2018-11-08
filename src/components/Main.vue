@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">
+  <div class="main">
     <navi-bar></navi-bar>
     <form>
       <div class="form-row">
@@ -80,7 +80,6 @@ import 'vue-datetime/dist/vue-datetime.css'
 Vue.use(Datetime)
 
 export default {
-
   name: 'Main',
   data () {
     return {
@@ -101,7 +100,7 @@ export default {
     }
   },
   created () {
-    const MY_ROOM_INFO_REQUEST = 'http://218.38.52.30:3000/room/minwoohi'
+    const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/minwoohi'
 
     axios.get(MY_ROOM_INFO_REQUEST).then((res) => {
       const resultObj = res.data.result
@@ -118,9 +117,8 @@ export default {
       this.myRoom.openUrl = resultObj.openUrl
       this.myRoom.intro = resultObj.intro
     })
-
-    const MY_ROOM_REQUESTER_LIST = 'http://218.38.52.30:3000/member/requester-room/dlgmlals'
-
+	const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/member/requester-room/dlgmlals'
+	
     axios.get(MY_ROOM_REQUESTER_LIST).then((res) => {
       this.myRoom.myRoomRequesterList = res.data.resultList
     })
@@ -128,7 +126,7 @@ export default {
   methods: {
 
     editMyRoom () {
-      const URI = 'http://218.38.52.30:3000/room/minwoohi'
+      const URI = Vue.prototype.$serverIp + '/room/minwoohi'
 
       axios.put(URI, this.myRoom).then((res) => {
         console.log('statusCode : ' + res.data.statusCode)

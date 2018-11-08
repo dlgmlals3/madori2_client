@@ -25,7 +25,6 @@ import Pagination from 'vue-pagination-2'
 Vue.component('pagination', Pagination)
 
 export default {
-
   name: 'RoomList',
   data () {
     return {
@@ -60,7 +59,7 @@ export default {
     }
   },
   created () {
-    const ROOM_LIST_REQUEST = 'http://218.38.52.30:3000/room/'
+    const ROOM_LIST_REQUEST = Vue.prototype.$serverIp + '/room/'
 
     this.getRoomList(ROOM_LIST_REQUEST)
   },

@@ -9,10 +9,11 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
+
+Vue.prototype.$serverIp = 'http://218.38.52.30:3000'
 new Vue({
-  el: '#app',
   components: { App },
   template: '<App/>',
   render: h => h(App),
   router
-})
+}).$mount('#app')

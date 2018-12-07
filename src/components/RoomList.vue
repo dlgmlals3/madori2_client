@@ -1,11 +1,36 @@
 <template>
   <div class="hello">
     <navi-bar></navi-bar>
-    <ul class="list-group list-group-flush">
+    <!-- <ul class="list-group list-group-flush">
       <li class="list-group-item" v-for="room of currentRoomList" :key="room._id" @click="$router.push('/room/' + room._id)">
+        <div v-if="room.place === 'Cherokee'"> <img :src="arenaImage" width="350" height="350"/> </div>
+        <div v-else-if="room.place === 'Crown Victoria'"> <img :src="kakaoImage" width="350" height="350"/> </div>
+        <div v-else> <img :src="defaultImage" width="350" height="350"/> </div>
         ID : {{room._id}}, title : {{room.title}}, regDate: {{room.regDate}}
       </li>
-    </ul>
+    </ul> -->
+    <table class="table table-striped table-dark">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Main Image</th>
+          <th scope="col">Title</th>
+          <th scope="col">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(room, index) in currentRoomList" :key="room._id" @click="$router.push('/room/' + room._id)">
+          <th scope="row">{{ index + 1}}</th>
+          <td>
+            <div v-if="room.place === 'Mirage'"> <img :src="arenaImage" width="100" height="100"/> </div>
+            <div v-else-if="room.place === 'Crown Victoria'"> <img :src="kakaoImage" width="100" height="100"/> </div>
+            <div v-else> <img :src="defaultImage" width="100" height="100"/> </div>
+          </td>
+          <td>{{room.title}}</td>
+          <td>{{room.regDate}}</td>
+        </tr>
+      </tbody>
+    </table>
     <pagination
       v-model="page"
       :per-page="this.perPage"
@@ -32,7 +57,10 @@ export default {
       total: 0,
       perPage: 10,
       roomList: [],
-      currentRoomList: []
+      currentRoomList: [],
+      arenaImage: require('../assets/login/arena.jpg'),
+      kakaoImage: require('../assets/login/kr/kakao_account_login_btn_large_wide.png'),
+      defaultImage: require('../assets/login/logo.png')
     }
   },
   methods: {

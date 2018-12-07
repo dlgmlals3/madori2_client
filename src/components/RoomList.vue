@@ -2,8 +2,8 @@
   <div class="hello">
     <navi-bar></navi-bar>
     <ul class="list-group list-group-flush">
-      <li class="list-group-item" v-for="room of currentRoomList" :key="room.memberId" @click="$router.push('/room/' + room.memberId)">
-        ID : {{room.memberId}}, title : {{room.title}}, regDate: {{room.regDate}}
+      <li class="list-group-item" v-for="room of currentRoomList" :key="room._id" @click="$router.push('/room/' + room._id)">
+        ID : {{room._id}}, title : {{room.title}}, regDate: {{room.regDate}}
       </li>
     </ul>
     <pagination

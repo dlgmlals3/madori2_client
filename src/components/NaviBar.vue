@@ -4,13 +4,13 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li>
-            <router-link to="/main">나랑 가치 놀고싶은 친구들</router-link>
+            <router-link to="/main">방만들기 및 방 수정하기</router-link>
           </li>
           <li>
-            <router-link to="/room">지금 놀고 싶은 친구들</router-link>
+            <router-link to="/room">방목록 보기</router-link>
           </li>
           <li>
-            <router-link to="/asdmain">내가 가치 놀고싶은 친구들</router-link>
+            <router-link to="/apply">내가 신청한 방보기</router-link>
           </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">

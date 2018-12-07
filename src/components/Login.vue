@@ -88,6 +88,8 @@ export default {
 	      axios.get(MY_LOGIN_REQUEST).then((res) => {
 	      	console.log("get data")
 	      })
+	      
+	      Vue.router.push('Main')
 	    },
 	    fail: function(error) {
 	      console.log(JSON.stringify(error));

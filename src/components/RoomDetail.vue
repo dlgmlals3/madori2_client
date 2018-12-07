@@ -12,7 +12,7 @@ import NaviBar from './NaviBar'
 
 export default {
   name: 'RoomDetail',
-  props: ['id'],
+  props: ['_id'],
   data () {
     return {
       room: {
@@ -37,7 +37,6 @@ export default {
 
         if (resultObj.statusCode === '200') {
           const room = resultObj.result
-
           this.room.title = room.title
           this.room.date = room.date
           this.room.maxMemberNum = room.maxMemberNum

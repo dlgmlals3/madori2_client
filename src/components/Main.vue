@@ -59,6 +59,11 @@
         <label for="intro">소개</label>
         <textarea class="form-control" v-model="myRoom.intro" aria-label="With textarea">소개를 입력하세요...</textarea>
       </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item" v-for="requester of myRoom.myRoomRequesterList" :key="requester.memberId">
+          {{requester.memberId}}
+        </li>
+      </ul>
       <button class="btn btn-primary" v-if="myRoom.statusCode != '200'" >방 만들기</button>
       <button type="button" class="btn btn-primary" v-else @click="editMyRoom" >방 수정하기</button>
     </form>

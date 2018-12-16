@@ -18,7 +18,7 @@
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">가격</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.price}}</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.price}} 원</div>
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">openUrl</div>
@@ -30,19 +30,33 @@
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">최소 나이</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.ageMin}}</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.ageMin}} 세</div>
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">최대 나이</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.ageMin}}</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.ageMin}} 세</div>
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">최대인원</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.maxMemberNum}}</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.maxMemberNum}} 명</div>
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">등록일자</div>
       <div class="col-sm-8" style="background-color:lavenderblush;">{{room.registDate}}</div>
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item" v-for="requester of room.myRoomRequesterList" :key="requester.memberId">
+          {{requester.memberId}}
+        </li>
+      </ul>
+    <div v-if="room.roomId === room.sessionMemberId">
+      <button class="btn btn-primary" > 방 수정하기 </button>
+      <button class="btn btn-primary" > 목록으로 돌아가기 </button>
+    </div>
+    <div v-else>
+      <button class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" > 가치 놀자고 연락하고 싶어 </button>
+      <button @click="$router.push('/room/')" class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" > 목록으로 돌아가기 </button>
+      <button @click="$router.push('/room/')" class="btn btn-primary" v-else  > 신청이 완료된 핫한 방입니다.목록으로 돌아가기 </button>
     </div>
   </div>
 </template>
@@ -63,6 +77,7 @@ export default {
       room: {
         title: '',
         maxMemberNum: '',
+        joinedMemberCount: 4,
         date: '',
         price: '',
         ageMax: '',
@@ -73,6 +88,7 @@ export default {
         intro: '',
         registDate: '',
         myRoomRequesterList: [],
+        sessionMemberId: '',
         arenaImage: require('../assets/login/arena.jpg'),
         kakaoImage: require('../assets/login/kr/kakao_account_login_btn_large_wide.png'),
         defaultImage: require('../assets/login/logo.png')
@@ -106,8 +122,11 @@ export default {
   },
   created () {
     const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/room/' + this._id
-    const REQUESTED_ROOM_LIST = Vue.prototype.$serverIp + '/member/requester-room' + this._id
     this.getRoomDetail(ROOM_DETAIL_REQUEST)
+    const REQUESTED_ROOM_LIST = Vue.prototype.$serverIp + '/member/requester-room/' + this._id
+    axios.get(REQUESTED_ROOM_LIST).then((res) => {
+      this.room.myRoomRequesterList = res.data.resultList
+    })
   },
   components: {
     'NaviBar': NaviBar

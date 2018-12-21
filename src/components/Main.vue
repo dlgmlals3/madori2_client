@@ -15,7 +15,7 @@
       <div class="form-row">
         <div class="form-group col-md-6">
           <label for="ageMin">최소 나이</label>
-          <input type="text" class="form-control" v-model="myRoom.ageMin" placeholder="최소 나이">
+          <input type="number" class="form-control" v-model="myRoom.ageMin" placeholder="최소 나이">
         </div>
         <div class="form-group col-md-6">
           <label for="ageMax">최대 나이</label>
@@ -24,7 +24,7 @@
       </div>
       <div class="form-group">
         <label for="date">시간</label>
-        <datetime type="datetime" v-model="myRoom.date" use12-hour></datetime>
+        <datetime type="datetime" v-model="myRoom.regDate" use12-hour></datetime>
       </div>
       <div class="form-group">
         <label for="price">가격</label>
@@ -34,15 +34,15 @@
         <div class="form-group col-md-6">
           <label for="gender">성별</label>
           <select v-model="myRoom.gender" class="form-control">
-            <option selected>전체</option>
-            <option value="m">남성</option>
+            <option value="0" selected>전체</option>
+            <option value="10">남성</option>
             <option value="20">여성</option>
           </select>
         </div>
         <div class="form-group col-md-4">
           <label for="region">지역</label>
           <select v-model="myRoom.region" class="form-control">
-            <option selected>전체</option>
+            <option value="0" selected>전체</option>
             <option value="10">강남</option>
             <option value="20">이태원</option>
             <option value="30">홍대</option>
@@ -64,14 +64,10 @@
           {{requester.memberId}}
         </li>
       </ul>
-      <button class="btn btn-primary" v-if="myRoom.statusCode != '200'" >방 만들기</button>
+      <button class="btn btn-primary" @click="createMyRoom" v-if="myRoom.statusCode != '200'" >방 만들기</button>
       <button type="button" class="btn btn-primary" v-else @click="editMyRoom" >방 수정하기</button>
+      <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
     </form>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item" v-for="requester of myRoom.myRoomRequesterList" :key="requester.memberId">
-        {{requester.memberId}}
-      </li>
-    </ul>
   </div>
 </template>
 
@@ -92,7 +88,7 @@ export default {
         statusCode: '',
         title: '',
         maxMemberNum: '',
-        date: '',
+        regDate: '',
         price: '',
         ageMax: '',
         ageMin: '',
@@ -105,22 +101,26 @@ export default {
     }
   },
   created () {
-    const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/minwoohi'
+    const memberId = 'minwoohi'
+    const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/' + memberId
+    console.log('url : ' + MY_ROOM_INFO_REQUEST)
 
     axios.get(MY_ROOM_INFO_REQUEST).then((res) => {
-      const resultObj = res.data.result
-
-      this.myRoom.statusCode = res.data.statusCode
-      this.myRoom.title = resultObj.title
-      this.myRoom.date = resultObj.date
-      this.myRoom.maxMemberNum = resultObj.maxMemberNum
-      this.myRoom.region = resultObj.region
-      this.myRoom.ageMin = resultObj.ageMin
-      this.myRoom.ageMax = resultObj.ageMax
-      this.myRoom.gender = resultObj.gender
-      this.myRoom.price = resultObj.price
-      this.myRoom.openUrl = resultObj.openUrl
-      this.myRoom.intro = resultObj.intro
+      const total = res.data.total
+      const resultObj = res.data.resultItem
+      if (total > 0) {
+        this.myRoom.statusCode = res.data.statusCode
+        this.myRoom.title = resultObj.title
+        this.myRoom.regDate = resultObj.regDate
+        this.myRoom.maxMemberNum = resultObj.maxMemberNum
+        this.myRoom.region = resultObj.region
+        this.myRoom.ageMin = resultObj.ageMin
+        this.myRoom.ageMax = resultObj.ageMax
+        this.myRoom.gender = resultObj.gender
+        this.myRoom.price = resultObj.price
+        this.myRoom.openUrl = resultObj.openUrl
+        this.myRoom.intro = resultObj.intro
+      }
     })
 	const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/member/requester-room/dlgmlals'
 	
@@ -135,6 +135,28 @@ export default {
 
       axios.put(URI, this.myRoom).then((res) => {
         console.log('statusCode : ' + res.data.statusCode)
+      })
+    },
+    createMyRoom() {
+      const URI = Vue.prototype.$serverIp + '/room/'
+      this.myRoom.memberId = 'minwoohi'
+      console.log('title : ' + this.myRoom.title)
+      console.log('region : ' + this.myRoom.region)
+      console.log('gender : ' + this.myRoom.gender)
+      console.log('ageMax : ' + this.myRoom.ageMax)
+
+      axios.post(URI, this.myRoom).then((res) => {
+        console.log('statusCode : ' + res.data.statusCode)
+      })
+    },
+    deleteMyRoom() {
+      this.myRoom.memberId = 'minwoohi'
+      const URI = Vue.prototype.$serverIp + '/room/'
+      console.log('URI : ' + URI)
+
+      axios.delete(URI + this.myRoom.memberId).then((res) => {
+        console.log('statusCode : ' + res.data.statusCode)
+        console.log('total : ' + res.data.total)
       })
     }
   },

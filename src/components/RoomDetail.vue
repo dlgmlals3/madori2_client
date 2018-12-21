@@ -76,8 +76,8 @@ export default {
     return {
       room: {
         title: '',
-        maxMemberNum: '',
-        joinedMemberCount: 4,
+        maxMemberNum: '4',
+        joinedMemberCount: 1,
         date: '',
         price: '',
         ageMax: '',

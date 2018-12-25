@@ -9,6 +9,8 @@
         ID : {{room._id}}, title : {{room.title}}, regDate: {{room.regDate}}
       </li>
     </ul> -->
+      <input class="form-control mr-sm-2" v-model="keyword" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" @click="searchRoomList">Search</button>
     <table class="table table-striped table-dark">
       <thead>
         <tr>
@@ -19,7 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(room, index) in currentRoomList" :key="room._id" @click="$router.push('/room/' + room._id)">
+        <tr v-for="(room, index) in currentRoomList" :key="room.memberId" @click="$router.push('/room/' + room.memberId)">
           <th scope="row">{{ index + 1}}</th>
           <td>
             <div v-if="room.place === 'Mirage'"> <img :src="arenaImage" width="100" height="100"/> </div>
@@ -80,14 +82,27 @@ export default {
     getRoomList (requestUrl) {
       axios.get(requestUrl).then((res) => {
         const resultObj = res.data
-        this.roomList = resultObj.resultList
+        this.roomList = resultObj.resultItems
         this.total = resultObj.total
+        this.pageChange()
+      })
+    },
+    searchRoomList() {
+      const SEARCH_REQ_URL = Vue.prototype.$serverIp + '/room/search/' + this.keyword
+      console.log('url : ' + SEARCH_REQ_URL)
+
+      axios.get(SEARCH_REQ_URL).then((res) => {
+        const resultObj = res.data
+        this.roomList = resultObj.resultItems
+        this.total = resultObj.total
+        console.log('axios total : ' + resultObj.total)
         this.pageChange()
       })
     }
   },
   created () {
     const ROOM_LIST_REQUEST = Vue.prototype.$serverIp + '/room/'
+    console.log('ROOM_LIST_REQUEST : ' + ROOM_LIST_REQUEST)
 
     this.getRoomList(ROOM_LIST_REQUEST)
   },

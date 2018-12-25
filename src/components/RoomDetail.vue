@@ -10,11 +10,11 @@
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">날짜</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.date}}</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.regDate}}</div>
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">장소</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.place}}</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.region}}</div>
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">가격</div>
@@ -70,7 +70,7 @@ import LoginVue from './Login.vue'
 export default {
   name: 'RoomDetail',
   props: {
-    _id: String
+    memberId: String
   },
   data () {
     return {
@@ -101,12 +101,13 @@ export default {
         const resultObj = res.data
 
         if (resultObj.statusCode === '200') {
-          const room = resultObj.result
+          const room = resultObj.resultItem
           this.room.title = room.title
           this.room.date = room.date
           this.room.place = room.place
           this.room.maxMemberNum = room.maxMemberNum
           this.room.region = room.region
+           this.room.regDate = room.regDate
           this.room.ageMin = room.ageMin
           this.room.ageMax = room.ageMax
           this.room.gender = room.gender
@@ -121,9 +122,9 @@ export default {
     }
   },
   created () {
-    const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/room/' + this._id
+    const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/room/' + this.memberId
     this.getRoomDetail(ROOM_DETAIL_REQUEST)
-    const REQUESTED_ROOM_LIST = Vue.prototype.$serverIp + '/member/requester-room/' + this._id
+    const REQUESTED_ROOM_LIST = Vue.prototype.$serverIp + '/member/requester-room/' + this.memberId
     axios.get(REQUESTED_ROOM_LIST).then((res) => {
       this.room.myRoomRequesterList = res.data.resultList
     })

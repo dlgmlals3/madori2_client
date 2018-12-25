@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Login from '@/components/Login'
-import Main from '@/components/Main'
+import MyRoom from '@/components/MyRoom'
 import RoomList from '@/components/RoomList'
 import RoomDetail from '@/components/RoomDetail'
 import RoomApply from '@/components/RoomApply'
@@ -17,20 +17,20 @@ export default new VueRouter({
       component: Login
     },
     {
-      path: '/main',
-      name: 'Main',
-      component: Main
+      path: '/myRoom',
+      name: 'MyRoom',
+      component: MyRoom
+    },
+    {
+      path: '/room/:memberId',
+      name: 'RoomDetail',
+      component: RoomDetail,
+      props: true
     },
     {
       path: '/room',
       name: 'RoomList',
       component: RoomList
-    },
-    {
-      path: '/room/:id',
-      name: 'RoomDetail',
-      component: RoomDetail,
-      props: true
     },
     {
         path: '/apply/:id',

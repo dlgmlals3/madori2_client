@@ -66,6 +66,8 @@
       </ul>
       <button class="btn btn-primary" @click="createMyRoom" v-if="isExist === false" >방 만들기</button>
       <button type="button" class="btn btn-primary" v-else @click="editMyRoom" >방 수정하기</button>
+      <button type="button" class="btn btn-primary" v-if="isExist === true" @click="enableMyRoomTags" >방 수정하기</button>
+      
       <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
     </form>
   </div>
@@ -134,10 +136,10 @@ export default {
         this.myRoom.intro = resultObj.intro
       }
     })
-	const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/member/requester-room/dlgmlals'
+	const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/room/applyRoom/dlgmlals'
 	
     axios.get(MY_ROOM_REQUESTER_LIST).then((res) => {
-      this.myRoom.myRoomRequesterList = res.data.resultList
+      this.myRoom.myRoomRequesterList = res.data.resultItems
     })
   },
   methods: {

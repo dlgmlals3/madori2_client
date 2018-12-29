@@ -58,6 +58,7 @@ export default {
       page: 1,
       total: 0,
       perPage: 10,
+      keyword: '',
       roomList: [],
       currentRoomList: [],
       arenaImage: require('../assets/login/arena.jpg'),

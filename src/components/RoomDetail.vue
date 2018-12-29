@@ -49,12 +49,12 @@
           {{requester.memberId}}
         </li>
       </ul>
-    <div v-if="room.roomId === room.sessionMemberId">
+    <div v-if="room.roomId === room.requestMemberId">
       <button class="btn btn-primary" > 방 수정하기 </button>
       <button class="btn btn-primary" > 목록으로 돌아가기 </button>
     </div>
     <div v-else>
-      <button class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" > 가치 놀자고 연락하고 싶어 </button>
+      <button class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" @click="applyRoom" > 가치 놀자고 연락하고 싶어 </button>
       <button @click="$router.push('/room/')" class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" > 목록으로 돌아가기 </button>
       <button @click="$router.push('/room/')" class="btn btn-primary" v-else  > 신청이 완료된 핫한 방입니다.목록으로 돌아가기 </button>
     </div>
@@ -88,7 +88,7 @@ export default {
         intro: '',
         registDate: '',
         myRoomRequesterList: [],
-        sessionMemberId: '',
+        requestMemberId: '',
         arenaImage: require('../assets/login/arena.jpg'),
         kakaoImage: require('../assets/login/kr/kakao_account_login_btn_large_wide.png'),
         defaultImage: require('../assets/login/logo.png')
@@ -102,12 +102,13 @@ export default {
 
         if (resultObj.statusCode === '200') {
           const room = resultObj.resultItem
+          this.room.memberId = room.memberId
           this.room.title = room.title
           this.room.date = room.date
           this.room.place = room.place
           this.room.maxMemberNum = room.maxMemberNum
           this.room.region = room.region
-           this.room.regDate = room.regDate
+          this.room.regDate = room.regDate
           this.room.ageMin = room.ageMin
           this.room.ageMax = room.ageMax
           this.room.gender = room.gender
@@ -119,14 +120,23 @@ export default {
           console.log('resultObj.statusCode != 200')
         }
       })
+    },
+    applyRoom() {
+      const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/'
+      //TODO change to Kakao Session id (my Id)
+      this.room.requestMemberId = 'minwoohi'
+
+      axios.post(APPLY_ROOM_REQ_URL, this.room).then(res => {
+
+      })
     }
   },
   created () {
     const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/room/' + this.memberId
     this.getRoomDetail(ROOM_DETAIL_REQUEST)
-    const REQUESTED_ROOM_LIST = Vue.prototype.$serverIp + '/member/requester-room/' + this.memberId
+    const REQUESTED_ROOM_LIST = Vue.prototype.$serverIp + '/room/applyRoom/' + this.memberId
     axios.get(REQUESTED_ROOM_LIST).then((res) => {
-      this.room.myRoomRequesterList = res.data.resultList
+      this.room.myRoomRequesterList = res.data.resultItems
     })
   },
   components: {

@@ -60,15 +60,29 @@
         <textarea class="form-control" v-model="myRoom.intro" :disabled='isDisabled' aria-label="With textarea">소개를 입력하세요...</textarea>
       </div>
       <ul class="list-group list-group-flush">
-        <li class="list-group-item" v-for="requester of myRoom.myRoomRequesterList" :key="requester.memberId">
+        <li class="list-group-item" v-for="requester of myRoom.myRoomRequesterList" :key="requester.memberId"
+          @click="$router.push('/room/' + room.memberId)">
           {{requester.memberId}}
         </li>
       </ul>
-      <button class="btn btn-primary" @click="createMyRoom" v-if="isExist === false" >방 만들기</button>
-      <button type="button" class="btn btn-primary" v-else @click="editMyRoom" >방 수정하기</button>
-      <button type="button" class="btn btn-primary" v-if="isExist === true" @click="enableMyRoomTags" >방 수정하기</button>
-      
-      <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
+      <div v-if="isEditable">
+        <div v-if="isExist">
+          <button type="button" class="btn btn-primary"  @click="enableEditMyRoom" >방 수정하기</button>
+          <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
+        </div>
+        <div v-else>
+          
+        </div>
+      </div>
+      <div v-else>
+        <div v-if="isExist">
+          <button type="button" class="btn btn-primary" @click="editMyRoom" >방 수정하기</button>
+          <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
+        </div>
+        <div v-else>
+          <button class="btn btn-primary" @click="createMyRoom">방 만들기</button>
+        </div>
+      </div>
     </form>
   </div>
 </template>
@@ -87,6 +101,8 @@ export default {
   data () {
     return {
       isExist: false,
+      isEditable: false,
+      total: '0',
       myRoom: {
         title: '',
         maxMemberNum: '',
@@ -104,14 +120,14 @@ export default {
   },
   computed:{
     isDisabled: function() {
-    	return this.isExist
+    	return this.isEditable
     }
   },
   watch:{
 
   },
   created () {
-    const memberId = 'minwoohi'
+    const memberId = 'minwoohi1'
     const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/' + memberId
     console.log('url : ' + MY_ROOM_INFO_REQUEST)
 
@@ -121,8 +137,11 @@ export default {
       const statusCode = res.data.statusCode
       const statusMsg = res.data.statusMsg
 
+
       if (total > 0 && statusCode === '200') {
+        this.isEditable = true
         this.isExist = true
+        this.total = res.data.total
         this.myRoom.statusCode = res.data.statusCode
         this.myRoom.title = resultObj.title
         this.myRoom.regDate = resultObj.regDate
@@ -136,7 +155,7 @@ export default {
         this.myRoom.intro = resultObj.intro
       }
     })
-	const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/room/applyRoom/dlgmlals'
+	const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/room/applyRoom/' + memberId
 	
     axios.get(MY_ROOM_REQUESTER_LIST).then((res) => {
       this.myRoom.myRoomRequesterList = res.data.resultItems
@@ -144,12 +163,19 @@ export default {
   },
   methods: {
 
-    editMyRoom () {
-      this.isExist = false
-      const URI = Vue.prototype.$serverIp + '/room/minwoohi'
+    enableEditMyRoom () {
+      this.isEditable = false
+      const memberId = 'minwoohi'
+      
+      const GET_MY_ROOM_INFO_URI = Vue.prototype.$serverIp + '/room/' + memberId
 
-      axios.put(URI, this.myRoom).then((res) => {
-        console.log('statusCode : ' + res.data.statusCode)
+      axios.get(GET_MY_ROOM_INFO_URI).then((res) => {
+        this.total = res.data.total
+        if (this.total > 0) {
+          this.isExist = true
+        } else {
+          this.isExist = false
+        }
       })
     },
     createMyRoom() {
@@ -157,7 +183,13 @@ export default {
       this.myRoom.memberId = 'minwoohi'
 
       axios.post(URI, this.myRoom).then((res) => {
-        console.log('statusCode : ' + res.data.statusCode)
+      })
+    },
+    editMyRoom() {
+      const URI = Vue.prototype.$serverIp + '/room/minwoohi'
+
+      axios.put(URI, this.myRoom).then((res) => {
+        this.total = res.data.total
       })
     },
     deleteMyRoom() {

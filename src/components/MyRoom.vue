@@ -69,20 +69,23 @@
         <div v-if="isExist">
           <button type="button" class="btn btn-primary"  @click="enableEditMyRoom" >방 수정하기</button>
           <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
+          <button type="button" class="btn btn-primary" @click="$router.push('/room/')"> 방 목록 보기 </button>
         </div>
         <div v-else>
-          
         </div>
       </div>
       <div v-else>
         <div v-if="isExist">
           <button type="button" class="btn btn-primary" @click="editMyRoom" >방 수정하기</button>
           <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
+          <button type="button" class="btn btn-primary" @click="$router.push('/room/')"> 방 목록 보기 </button>
         </div>
         <div v-else>
-          <button class="btn btn-primary" @click="createMyRoom">방 만들기</button>
+          <button type="button" class="btn btn-primary" @click="createMyRoom">방 만들기</button>
+          <button type="button" class="btn btn-primary" @click="$router.push('/room/')"> 방 목록 보기 </button>
         </div>
       </div>
+      
     </form>
   </div>
 </template>
@@ -127,7 +130,7 @@ export default {
 
   },
   created () {
-    const memberId = 'minwoohi1'
+    const memberId = 'minwoohi'
     const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/' + memberId
     console.log('url : ' + MY_ROOM_INFO_REQUEST)
 

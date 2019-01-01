@@ -10,7 +10,7 @@
             <router-link to="/room">방목록 보기</router-link>
           </li>
           <li>
-            <router-link to="/apply">내가 신청한 방보기</router-link>
+            <router-link :to="'/applyRoom/' + memberId">내가 신청한 방보기</router-link>
           </li>
         </ul>
       </div>
@@ -29,7 +29,8 @@ export default {
   name: 'NaviBar',
   data () {
     return {
-        keyword: ''
+        keyword: '',
+        memberId: 'minwoohi'
       }
     },
   created() {

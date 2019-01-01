@@ -51,7 +51,7 @@
       </ul>
     <div v-if="room.roomId === room.requestMemberId">
       <button class="btn btn-primary" > 방 수정하기 </button>
-      <button class="btn btn-primary" > 목록으로 돌아가기 </button>
+      <button class="btn btn-primary" @click="$router.push('/room/')"> 목록으로 돌아가기 </button>
     </div>
     <div v-else>
       <button class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" @click="applyRoom" > 가치 놀자고 연락하고 싶어 </button>

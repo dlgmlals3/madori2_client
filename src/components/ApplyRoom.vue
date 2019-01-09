@@ -4,21 +4,21 @@
     <table class="table table-striped table-dark">
       <thead>
         <tr>
-          <th scope="col">#</th>
+          <th scope="col">No</th>
           <th scope="col">Main Image</th>
           <th scope="col">Title</th>
-          <th scope="col">Date</th>
+          <th scope="col">MemberId</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(room, index) in appliedRoomList" :key="room.memberId" @click="$router.push('/room/' + room.memberId)">
+        <tr v-for="(room, index) in appliedRoomList" :key="room.memberId" @click="$router.push('/member/' + room.memberId)">
           <th scope="row">{{ index + 1}}</th>
           <td>
             <div v-if="room.place === 'Mirage'"> <img :src="arenaImage" width="100" height="100"/> </div>
             <div v-else-if="room.place === 'Crown Victoria'"> <img :src="kakaoImage" width="100" height="100"/> </div>
             <div v-else> <img :src="defaultImage" width="100" height="100"/> </div>
           </td>
-          <td>{{room.memberId}}</td>
+          <td>{{room.title}}</td>
           <td>{{room.memberId}}</td>
         </tr>
       </tbody>
@@ -56,7 +56,7 @@ export default {
     }
   },
   created () {
-    const APPLIED_ROOM_LIST_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/' + this.memberId
+    const APPLIED_ROOM_LIST_REQ_URL = Vue.prototype.$serverIp + '/room/myApplyInfo/' + this.memberId
     console.log('url : ' + APPLIED_ROOM_LIST_REQ_URL)
     this.getAppliedRoomList(APPLIED_ROOM_LIST_REQ_URL)
   },

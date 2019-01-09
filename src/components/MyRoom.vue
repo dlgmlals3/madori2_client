@@ -22,13 +22,19 @@
           <input type="number" class="form-control" :disabled='isDisabled' v-model="myRoom.ageMax" placeholder="최대 나이">
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group col-md-6">
         <label for="date">시간</label>
         <datetime type="datetime" :disabled='isDisabled' v-model="myRoom.regDate" use12-hour></datetime>
       </div>
-      <div class="form-group">
-        <label for="price">가격</label>
-        <input type="number" class="form-control" :disabled='isDisabled' v-model="myRoom.price" placeholder="가격">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="memberId">memberId</label>
+            <input type="text" class="form-control" :disabled='isDisabled' v-model="myRoom.memberId" placeholder="memberId">
+          </div>
+        <div class="form-group col-md-6">
+          <label for="price">가격</label>
+          <input type="number" class="form-control" :disabled='isDisabled' v-model="myRoom.price" placeholder="가격">
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group col-md-6">
@@ -61,7 +67,7 @@
       </div>
       <ul class="list-group list-group-flush">
         <li class="list-group-item" v-for="requester of myRoom.myRoomRequesterList" :key="requester.memberId"
-          @click="$router.push('/room/' + room.memberId)">
+          @click="$router.push('/member/' + requester.memberId)">
           {{requester.memberId}}
         </li>
       </ul>
@@ -107,6 +113,7 @@ export default {
       isEditable: false,
       total: '0',
       myRoom: {
+        memberId: '',
         title: '',
         maxMemberNum: '',
         regDate: '',
@@ -130,7 +137,7 @@ export default {
 
   },
   created () {
-    const memberId = 'minwoohi'
+    const memberId = 'dlgmlals3'
     const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/' + memberId
     console.log('url : ' + MY_ROOM_INFO_REQUEST)
 
@@ -183,9 +190,11 @@ export default {
     },
     createMyRoom() {
       const URI = Vue.prototype.$serverIp + '/room/'
-      this.myRoom.memberId = 'minwoohi'
+      //this.myRoom.memberId = 'minwoohi'
+      console.log('memberId : ' + this.myRoom.memberId)
 
       axios.post(URI, this.myRoom).then((res) => {
+
       })
     },
     editMyRoom() {

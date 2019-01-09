@@ -4,6 +4,7 @@ import MyRoom from '@/components/MyRoom'
 import RoomList from '@/components/RoomList'
 import RoomDetail from '@/components/RoomDetail'
 import ApplyRoom from '@/components/ApplyRoom'
+import MemberDetail from '@/components/MemberDetail'
 import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
@@ -37,6 +38,12 @@ export default new VueRouter({
         name: 'ApplyRoom',
         component: ApplyRoom,
         props: true
+    },
+    {
+      path: '/member/:memberId',
+      name: 'MemberDetail',
+      component: MemberDetail,
+      props: true
     },
     {
       path: '*',

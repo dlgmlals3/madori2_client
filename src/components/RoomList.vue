@@ -14,9 +14,10 @@
     <table class="table table-striped table-dark">
       <thead>
         <tr>
-          <th scope="col">#</th>
+          <th scope="col">No</th>
           <th scope="col">Main Image</th>
           <th scope="col">Title</th>
+          <th scope="col">Member Id</th>
           <th scope="col">Date</th>
         </tr>
       </thead>
@@ -29,6 +30,7 @@
             <div v-else> <img :src="defaultImage" width="100" height="100"/> </div>
           </td>
           <td>{{room.title}}</td>
+          <td>{{room.memberId}}</td>
           <td>{{room.regDate}}</td>
         </tr>
       </tbody>

@@ -89,7 +89,7 @@ export default {
 	      	console.log("get data")
 	      })
 	      
-	      Vue.router.push('Main')
+	      this.$router.push('/myRoom')
 	    },
 	    fail: function(error) {
 	      console.log(JSON.stringify(error));

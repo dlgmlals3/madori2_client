@@ -71,26 +71,10 @@
           {{requester.memberId}}
         </li>
       </ul>
-      <div v-if="isEditable">
-        <div v-if="isExist">
-          <button type="button" class="btn btn-primary"  @click="enableEditMyRoom" >방 수정하기</button>
-          <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
-          <button type="button" class="btn btn-primary" @click="$router.push('/room/')"> 방 목록 보기 </button>
-        </div>
-        <div v-else>
-        </div>
-      </div>
-      <div v-else>
-        <div v-if="isExist">
-          <button type="button" class="btn btn-primary" @click="editMyRoom" >방 수정하기</button>
-          <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
-          <button type="button" class="btn btn-primary" @click="$router.push('/room/')"> 방 목록 보기 </button>
-        </div>
-        <div v-else>
           <button type="button" class="btn btn-primary" @click="createMyRoom">방 만들기</button>
+          <button type="button" class="btn btn-primary"  @click="editMyRoom" >방 수정하기 editMyRoom</button>
+          <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
           <button type="button" class="btn btn-primary" @click="$router.push('/room/')"> 방 목록 보기 </button>
-        </div>
-      </div>
       
     </form>
   </div>
@@ -106,7 +90,7 @@ import 'vue-datetime/dist/vue-datetime.css'
 Vue.use(Datetime)
 
 export default {
-  name: 'Main',
+  name: 'MyRoom',
   data () {
     return {
       isExist: false,
@@ -137,76 +121,99 @@ export default {
 
   },
   created () {
-    const memberId = 'dlgmlals3'
-    const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/' + memberId
-    console.log('url : ' + MY_ROOM_INFO_REQUEST)
+      let memberId = this.$store.state.memberId
+      console.log('mounted() this.$store.state.userId : ' + this.$store.state.memberId)
+      console.log('mounted() this.$store.state.userId : ' + this.$store.state.memberId)
+      const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/' + memberId
+      console.log('url : ' + MY_ROOM_INFO_REQUEST)
+      console.log('isExist : ' + this.isExist)
+      console.log('isEditable : ' + this.isEditable)
+      this.isExist = this.$store.state.isExist
+      this.isEditable = this.$store.state.isEditable
+      console.log('after isExist : ' + this.isExist)
+      console.log('after isEditable : ' + this.isEditable)
+      
 
-    axios.get(MY_ROOM_INFO_REQUEST).then((res) => {
-      const total = res.data.total
-      const resultObj = res.data.resultItem
-      const statusCode = res.data.statusCode
-      const statusMsg = res.data.statusMsg
+      axios.get(MY_ROOM_INFO_REQUEST).then((res) => {
+        const total = res.data.total
+        const resultObj = res.data.resultItem
+        const statusCode = res.data.statusCode
+        const statusMsg = res.data.statusMsg
 
-
-      if (total > 0 && statusCode === '200') {
-        this.isEditable = true
-        this.isExist = true
-        this.total = res.data.total
-        this.myRoom.statusCode = res.data.statusCode
-        this.myRoom.title = resultObj.title
-        this.myRoom.regDate = resultObj.regDate
-        this.myRoom.maxMemberNum = resultObj.maxMemberNum
-        this.myRoom.region = resultObj.region
-        this.myRoom.ageMin = resultObj.ageMin
-        this.myRoom.ageMax = resultObj.ageMax
-        this.myRoom.gender = resultObj.gender
-        this.myRoom.price = resultObj.price
-        this.myRoom.openUrl = resultObj.openUrl
-        this.myRoom.intro = resultObj.intro
-      }
-    })
-	const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/room/applyRoom/' + memberId
-	
-    axios.get(MY_ROOM_REQUESTER_LIST).then((res) => {
-      this.myRoom.myRoomRequesterList = res.data.resultItems
-    })
+        if (total > 0 && statusCode === '200') {
+          this.$store.state.isEditable = true
+          this.$store.state.isExist = true
+          this.total = res.data.total
+          this.myRoom.statusCode = res.data.statusCode
+          this.myRoom.title = resultObj.title
+          this.myRoom.regDate = resultObj.regDate
+          this.myRoom.maxMemberNum = resultObj.maxMemberNum
+          this.myRoom.region = resultObj.region
+          this.myRoom.ageMin = resultObj.ageMin
+          this.myRoom.ageMax = resultObj.ageMax
+          this.myRoom.gender = resultObj.gender
+          this.myRoom.price = resultObj.price
+          this.myRoom.openUrl = resultObj.openUrl
+          this.myRoom.intro = resultObj.intro
+        }
+      })
+      const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/room/applyRoom/' + memberId
+    
+      axios.get(MY_ROOM_REQUESTER_LIST).then((res) => {
+        this.myRoom.myRoomRequesterList = res.data.resultItems
+      })
+  },
+  updated() {
+    //console.log('22222222222222222')
   },
   methods: {
 
     enableEditMyRoom () {
-      this.isEditable = false
-      const memberId = 'minwoohi'
+      this.isEditable = true
+      const memberId = this.$store.state.memberId
+      
       
       const GET_MY_ROOM_INFO_URI = Vue.prototype.$serverIp + '/room/' + memberId
+
+      console.log('GET_MY_ROOM_INFO_URI : ' + GET_MY_ROOM_INFO_URI)
 
       axios.get(GET_MY_ROOM_INFO_URI).then((res) => {
         this.total = res.data.total
         if (this.total > 0) {
+          this.$store.state.isExist = true
           this.isExist = true
+
+          //
+          this.$store.state.isEditable = true
+          this.isEditable = true
         } else {
+          this.$store.state.isExist = false
           this.isExist = false
         }
       })
     },
     createMyRoom() {
       const URI = Vue.prototype.$serverIp + '/room/'
-      //this.myRoom.memberId = 'minwoohi'
-      console.log('memberId : ' + this.myRoom.memberId)
-
       axios.post(URI, this.myRoom).then((res) => {
-
+        this.$store.state.memberId = this.myRoom.memberId
+        console.log('store memberid : ' + this.$store.state.memberId)
+        
+        //this.$router.push('/myRoom')
+        this.$store.state.isExist = true
       })
     },
     editMyRoom() {
-      const URI = Vue.prototype.$serverIp + '/room/minwoohi'
+      const memberId = this.$store.state.memberId
+      //const URI = Vue.prototype.$serverIp + '/room/' + memberId
+      const URI = Vue.prototype.$serverIp + '/room/' + memberId
 
       axios.put(URI, this.myRoom).then((res) => {
         this.total = res.data.total
       })
     },
     deleteMyRoom() {
-      this.myRoom.memberId = 'minwoohi'
-      const URI = Vue.prototype.$serverIp + '/room/'
+      const memberId = this.$store.state.memberId
+      const URI = Vue.prototype.$serverIp + '/room/' + memberId
 
       axios.delete(URI + this.myRoom.memberId).then((res) => {
         

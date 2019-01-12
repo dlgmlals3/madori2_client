@@ -71,6 +71,7 @@ export default {
     }
   },
   created () {
+    console.log('22222222222222 Global account name : ' + this.$store.userId)
     const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/member/' + this.memberId
     /*axios.get(ROOM_DETAIL_REQUEST).then((res) => {
       this.room.myRoomRequesterList = res.data.resultItems

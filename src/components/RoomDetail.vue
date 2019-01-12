@@ -5,6 +5,10 @@
     <img v-else-if="room.place === 'Crown Victoria'" :src="room.kakaoImage" width="100" height="100"/>
     <img v-else :src="room.defaultImage" width="100" height="100"/>
     <div class="row detailDiv">
+      <div class="col-sm-4" style="background-color:lavender;">memberId</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{memberId}}</div>
+    </div>
+    <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">방제</div>
       <div class="col-sm-8" style="background-color:lavenderblush;">{{room.title}}</div>
     </div>
@@ -124,10 +128,10 @@ export default {
     applyRoom() {
       const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/'
       //TODO change to Kakao Session id (my Id)
-      this.room.requestMemberId = 'minwoohi'
+      this.room.requestMemberId = this.$store.state.memberId
 
       axios.post(APPLY_ROOM_REQ_URL, this.room).then(res => {
-
+        console.log('res : ' + res)
       })
     }
   },

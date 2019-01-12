@@ -10,7 +10,13 @@
             <router-link to="/room">방목록 보기</router-link>
           </li>
           <li>
-            <router-link :to="'/applyRoom/' + memberId">내가 신청한 방보기</router-link>
+            <router-link :to="'/applyRoom/' + naviMemberId">내가 신청한 방보기</router-link>
+          </li>
+          <li>
+            <input type="text" class="form-control" v-model="naviMemberId" placeholder="naviMemberId">
+          </li>
+          <li>
+            <button type="button" class="btn btn-primary" @click="setMemberId">Set MemberId</button>
           </li>
         </ul>
       </div>
@@ -30,11 +36,18 @@ export default {
   data () {
     return {
         keyword: '',
-        memberId: 'minwoohi'
+        naviMemberId: ''
       }
     },
   created() {
 
+  },
+  methods: {
+    setMemberId () {
+      this.$store.state.memberId = this.naviMemberId
+      console.log('this naviMemberId : ' + this.naviMemberId)
+      console.log('store memberId : ' + this.$store.state.memberId)
+    }
   }
 }
 </script>

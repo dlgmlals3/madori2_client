@@ -28,9 +28,9 @@
       </div>
       <div class="form-row">
         <div class="form-group col-md-6">
-            <label for="memberId">memberId</label>
-            <input type="text" class="form-control" :disabled='isDisabled' v-model="myRoom.memberId" placeholder="memberId">
-          </div>
+          <label for="price">memberId</label>
+          <input type="number" class="form-control" :disabled='isDisabled' v-model="myRoom.memberId" placeholder="memberId">
+        </div>
         <div class="form-group col-md-6">
           <label for="price">가격</label>
           <input type="number" class="form-control" :disabled='isDisabled' v-model="myRoom.price" placeholder="가격">
@@ -194,8 +194,8 @@ export default {
     },
     createMyRoom() {
       const URI = Vue.prototype.$serverIp + '/room/'
+      this.myRoom.memberId = this.$store.state.memberId
       axios.post(URI, this.myRoom).then((res) => {
-        this.$store.state.memberId = this.myRoom.memberId
         console.log('store memberid : ' + this.$store.state.memberId)
         
         //this.$router.push('/myRoom')

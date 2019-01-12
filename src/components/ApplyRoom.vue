@@ -31,11 +31,14 @@ import Vue from 'vue'
 import axios from 'axios'
 import NaviBar from './NaviBar'
 
+
 export default {
   name: 'ApplyRoom',
   props: ['memberId'],
   data () {
     return {
+      roomId: '',
+      requestMemberId: '',
       appliedRoomList: [],
       arenaImage: require('../assets/login/arena.jpg'),
       kakaoImage: require('../assets/login/kr/kakao_account_login_btn_large_wide.png'),
@@ -58,6 +61,7 @@ export default {
   created () {
     const APPLIED_ROOM_LIST_REQ_URL = Vue.prototype.$serverIp + '/room/myApplyInfo/' + this.$store.state.memberId //this.memberId
     console.log('url : ' + APPLIED_ROOM_LIST_REQ_URL)
+    
     this.getAppliedRoomList(APPLIED_ROOM_LIST_REQ_URL)
   },
   components: {

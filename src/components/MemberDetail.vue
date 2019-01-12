@@ -5,8 +5,8 @@
     <img v-else-if="room.place === 'Crown Victoria'" :src="room.kakaoImage" width="100" height="100"/>
     <img v-else :src="room.defaultImage" width="100" height="100"/>
     <div class="row detailDiv">
-      <div class="col-sm-4" style="background-color:lavender;">memberId</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{memberId}}</div>
+      <div class="col-sm-4" style="background-color:lavender;">requestMemberId</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{requestMemberId}}</div>
     </div>
     <div>
       <button @click="acceptApplicant" class="btn btn-primary" > 이 친구랑 가치놀기 </button>
@@ -25,11 +25,12 @@ import LoginVue from './Login.vue'
 export default {
   name: 'RoomDetail',
   props: {
-    memberId: String
+    requestMemberId: String
   },
   data () {
     return {
       room: {
+        roomId: '',
         title: '',
         maxMemberNum: '4',
         joinedMemberCount: 1,
@@ -42,8 +43,8 @@ export default {
         openUrl: '',
         intro: '',
         registDate: '',
+        requestStatus: '',
         myRoomRequesterList: [],
-        requestMemberId: '',
         arenaImage: require('../assets/login/arena.jpg'),
         kakaoImage: require('../assets/login/kr/kakao_account_login_btn_large_wide.png'),
         defaultImage: require('../assets/login/logo.png')
@@ -52,30 +53,40 @@ export default {
   },
   methods: {
     acceptApplicant() {
-      const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/'
+      console.log('acceptApplicant')
+      const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/status'
+      console.log('APPLY_ROOM_REQ_URL : ' + APPLY_ROOM_REQ_URL)
       //TODO change to Kakao Session id (my Id)
-      this.room.requestMemberId = 'minwoohi'
+      this.room.roomId = this.$store.state.roomId
+      this.room.requestMemberId = this.requestMemberId
+      this.room.requestStatus = '20' // apply
+      
 
-      axios.post(APPLY_ROOM_REQ_URL, this.room).then(res => {
+      axios.put(APPLY_ROOM_REQ_URL, this.room).then(res => {
 
       })
     },
     rejectApplicant() {
-      const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/'
+      console.log('rejectApplicant')
+      const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/status'
+      console.log('APPLY_ROOM_REQ_URL : ' + APPLY_ROOM_REQ_URL)
       //TODO change to Kakao Session id (my Id)
-      this.room.requestMemberId = 'minwoohi'
+      this.room.roomId = this.$store.state.roomId
+      this.room.requestMemberId = this.requestMemberId
+      this.room.requestStatus = '30' // reject
+      
 
-      axios.post(APPLY_ROOM_REQ_URL, this.room).then(res => {
+      axios.put(APPLY_ROOM_REQ_URL, this.room).then(res => {
 
       })
     }
   },
   created () {
-    console.log('22222222222222 Global account name : ' + this.$store.userId)
-    const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/member/' + this.memberId
-    /*axios.get(ROOM_DETAIL_REQUEST).then((res) => {
+    const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/member/' + this.requestMemberId
+    console.log('ROOM_DETAIL_REQUEST : ' + ROOM_DETAIL_REQUEST)
+    axios.get(ROOM_DETAIL_REQUEST).then((res) => {
       this.room.myRoomRequesterList = res.data.resultItems
-    })*/
+    })
   },
   components: {
     'NaviBar': NaviBar

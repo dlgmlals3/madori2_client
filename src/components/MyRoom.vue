@@ -122,8 +122,7 @@ export default {
   },
   created () {
       let memberId = this.$store.state.memberId
-      console.log('mounted() this.$store.state.userId : ' + this.$store.state.memberId)
-      console.log('mounted() this.$store.state.userId : ' + this.$store.state.memberId)
+      console.log('mounted() this.$store.state.roomId : ' + this.$store.state.roomId)
       const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/' + memberId
       console.log('url : ' + MY_ROOM_INFO_REQUEST)
       console.log('isExist : ' + this.isExist)
@@ -157,7 +156,7 @@ export default {
           this.myRoom.intro = resultObj.intro
         }
       })
-      const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/room/applyRoom/' + memberId
+      const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/room/applyRoom/' + this.$store.state.roomId
     
       axios.get(MY_ROOM_REQUESTER_LIST).then((res) => {
         this.myRoom.myRoomRequesterList = res.data.resultItems
@@ -197,6 +196,8 @@ export default {
       this.myRoom.memberId = this.$store.state.memberId
       axios.post(URI, this.myRoom).then((res) => {
         console.log('store memberid : ' + this.$store.state.memberId)
+        this.$store.state.roomId = res.data.roomId
+        console.log('store roomId : ' + this.$store.state.memberId)
         
         //this.$router.push('/myRoom')
         this.$store.state.isExist = true

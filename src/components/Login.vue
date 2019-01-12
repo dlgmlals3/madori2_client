@@ -80,16 +80,17 @@ export default {
 	    url: '/v2/user/me',
 	    success: function(res) {
 	      //console.log(JSON.stringify(res));
-	      console.log(res.id)    
-	      //this.sendToServer()
+	      console.log('res id : ' + res.id)    
+        //this.sendToServer()
+        this.$router.push('/myRoom/')
 	      
-	      const MY_LOGIN_REQUEST = Vue.prototype.$serverIp + '/login/' + res.id
-	      console.log("request" + MY_LOGIN_REQUEST)  
+	      /*const MY_LOGIN_REQUEST = Vue.prototype.$serverIp + '/login/' + res.id
+	      console.log("request : " + MY_LOGIN_REQUEST)  
 	      axios.get(MY_LOGIN_REQUEST).then((res) => {
 	      	console.log("get data")
-	      })
+	      })*/
 	      
-	      this.$router.push('/myRoom')
+	      
 	    },
 	    fail: function(error) {
 	      console.log(JSON.stringify(error));
@@ -101,7 +102,7 @@ export default {
     },
     sendToServer() {
       console.log("sendDataToServer")
-
+      
     },
   },
   created () {

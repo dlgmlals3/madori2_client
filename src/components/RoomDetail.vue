@@ -5,6 +5,10 @@
     <img v-else-if="room.place === 'Crown Victoria'" :src="room.kakaoImage" width="100" height="100"/>
     <img v-else :src="room.defaultImage" width="100" height="100"/>
     <div class="row detailDiv">
+      <div class="col-sm-4" style="background-color:lavender;">roomId</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.roomId}}</div>
+    </div>
+    <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">memberId</div>
       <div class="col-sm-8" style="background-color:lavenderblush;">{{memberId}}</div>
     </div>
@@ -49,7 +53,8 @@
       <div class="col-sm-8" style="background-color:lavenderblush;">{{room.registDate}}</div>
     </div>
     <ul class="list-group list-group-flush">
-        <li class="list-group-item" v-for="requester of room.myRoomRequesterList" :key="requester.memberId">
+        <li class="list-group-item"  v-for="requester of room.myRoomRequesterList" :key="requester.memberId"
+        @click="getMemberDetail(requester.memberId)">
           {{requester.memberId}}
         </li>
       </ul>
@@ -60,7 +65,7 @@
     <div v-else>
       <button class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" @click="applyRoom" > 가치 놀자고 연락하고 싶어 </button>
       <button @click="$router.push('/room/')" class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" > 목록으로 돌아가기 </button>
-      <button @click="$router.push('/room/')" class="btn btn-primary" v-else  > 신청이 완료된 핫한 방입니다.목록으로 돌아가기 </button>
+      <button @click="$router.push('/room/')" class="btn btn-primary" v-else  > 신청이 완료된 핫한 방입니다.목록으로 돌아가기 {{room.maxMemberNum}},  {{room.joinedMemberCount}} </button>
     </div>
   </div>
 </template>
@@ -79,9 +84,10 @@ export default {
   data () {
     return {
       room: {
+        roomId: '',
         title: '',
         maxMemberNum: '4',
-        joinedMemberCount: 1,
+        joinedMemberCount: 0,
         date: '',
         price: '',
         ageMax: '',
@@ -106,7 +112,7 @@ export default {
 
         if (resultObj.statusCode === '200') {
           const room = resultObj.resultItem
-          this.room.memberId = room.memberId
+          this.room.roomId = room.roomId
           this.room.title = room.title
           this.room.date = room.date
           this.room.place = room.place
@@ -123,12 +129,29 @@ export default {
         } else {
           console.log('resultObj.statusCode != 200')
         }
+
+        const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/room/applyRoom/' + this.room.roomId
+        console.log('MY_ROOM_REQUESTER_LIST : ' + MY_ROOM_REQUESTER_LIST)
+      
+        axios.get(MY_ROOM_REQUESTER_LIST).then((res) => {
+          this.room.myRoomRequesterList = res.data.resultItems
+        })
       })
+    },
+    getMemberDetail(requestMemberId) {
+      console.log('requestMemberId : ' + requestMemberId)
+      this.room.requestMemberId = requestMemberId
+      this.room.roomId = this.$store.state.roomId
+      console.log('this.$store.state.memberId : ' + this.$store.state.memberId)
+
+      console.log('requestMemberId : ' + this.room.requestMemberId)
+      this.$router.push('/member/' + this.room.requestMemberId)
     },
     applyRoom() {
       const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/'
       //TODO change to Kakao Session id (my Id)
       this.room.requestMemberId = this.$store.state.memberId
+      this.room.roomId = this.$store.state.roomId
 
       axios.post(APPLY_ROOM_REQ_URL, this.room).then(res => {
         console.log('res : ' + res)
@@ -137,11 +160,8 @@ export default {
   },
   created () {
     const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/room/' + this.memberId
+    console.log('ROOM_DETAIL_REQUEST : ' + ROOM_DETAIL_REQUEST)
     this.getRoomDetail(ROOM_DETAIL_REQUEST)
-    const REQUESTED_ROOM_LIST = Vue.prototype.$serverIp + '/room/applyRoom/' + this.memberId
-    axios.get(REQUESTED_ROOM_LIST).then((res) => {
-      this.room.myRoomRequesterList = res.data.resultItems
-    })
   },
   components: {
     'NaviBar': NaviBar

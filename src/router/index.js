@@ -40,7 +40,7 @@ export default new VueRouter({
         props: true
     },
     {
-      path: '/member/:memberId',
+      path: '/member/:requestMemberId',
       name: 'MemberDetail',
       component: MemberDetail,
       props: true

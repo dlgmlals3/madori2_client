@@ -24,7 +24,7 @@ import Vue from 'vue'
 import axios from 'axios'
 
 Vue.component('component1', { template: 
-	"<div> <font color='red'> <h2> Open Time </h2></font> </div>"
+	"<div> <font color='red'> <h2>  GNJ </h2></font> </div>"
 });
 
 let local_cmp = {
@@ -41,7 +41,7 @@ export default {
   	},
   	greeting : {
   		type: String,
-  		default() { return "같이 놀자 GNJ" }
+  		default() { return "GNJ" }
   	},
   	datenow : {
   		type: String,
@@ -50,7 +50,7 @@ export default {
   },
   data () {
   	return { // use in property
-  		entryPicture: require('../assets/login/arena.jpg'),
+  		entryPicture: require('../assets/login/logo.png'),
   		kakaotalkPicture: require('../assets/login/kr/kakao_account_login_btn_large_wide.png'),
   	}
   },
@@ -71,31 +71,27 @@ export default {
   	  Kakao.init(this.apiKey);
   	  Kakao.Auth.login({
     	success: (authObj) => this.onSuccess(authObj),
-    	fail: (err) => this.onFailure(err)
+      fail: (err) => this.onFailure(err),
       });
     },
     onSuccess(authObj) {
-        console.log("onSuccess")
-        Kakao.API.request({
-	    url: '/v2/user/me',
-	    success: function(res) {
-	      //console.log(JSON.stringify(res));
-	      console.log('res id : ' + res.id)    
-        //this.sendToServer()
+        const router = this.$router
+        console.log("onSuccess, authObj : " + JSON.stringify(authObj))
+        let token = authObj.access_token
+        console.log('token : ' + token)
+
+        Kakao.Auth.setAccessToken(token);
         this.$router.push('/myRoom/')
-	      
-	      /*const MY_LOGIN_REQUEST = Vue.prototype.$serverIp + '/login/' + res.id
-	      console.log("request : " + MY_LOGIN_REQUEST)  
-	      axios.get(MY_LOGIN_REQUEST).then((res) => {
-	      	console.log("get data")
-	      })*/
-	      
-	      
-	    },
-	    fail: function(error) {
-	      console.log(JSON.stringify(error));
-	    }
-	  });
+        /*Kakao.API.request({
+          url: '/v2/user/me',
+          success: function(res) {
+            console.log('SUCCESS : ' + JSON.stringify(res))
+            router.push('/myRoom/')
+          },
+          fail: function(error) {
+            console.log('FAIL : ' + JSON.stringify(error))
+          }
+	  });*/
     },
     onFailure(err) {
       console.log("onFailure")

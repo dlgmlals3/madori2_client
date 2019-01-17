@@ -80,6 +80,7 @@
   </div>
 </template>
 
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
 <script>
 import Vue from 'vue'
 import axios from 'axios'
@@ -118,9 +119,20 @@ export default {
     }
   },
   watch:{
-
   },
   created () {
+
+      Kakao.API.request({
+          url: '/v2/user/me',
+          success: function(res) {
+            console.log('SUCCESS : ' + JSON.stringify(res))
+            //router.push('/myRoom/')
+          },
+          fail: function(error) {
+            console.log('FAIL : ' + JSON.stringify(error))
+          }
+	  });
+
       let memberId = this.$store.state.memberId
       console.log('mounted() this.$store.state.roomId : ' + this.$store.state.roomId)
       const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/' + memberId
@@ -132,7 +144,6 @@ export default {
       console.log('after isExist : ' + this.isExist)
       console.log('after isEditable : ' + this.isEditable)
       
-
       axios.get(MY_ROOM_INFO_REQUEST).then((res) => {
         const total = res.data.total
         const resultObj = res.data.resultItem

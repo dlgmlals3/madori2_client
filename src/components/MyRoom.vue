@@ -29,7 +29,7 @@
       <div class="form-row">
         <div class="form-group col-md-6">
           <label for="price">memberId</label>
-          <input type="number" class="form-control" :disabled='isDisabled' v-model="myRoom.memberId" placeholder="memberId">
+          <input type="number" class="form-control" v-model="myRoom.memberId" placeholder="memberId">
         </div>
         <div class="form-group col-md-6">
           <label for="price">가격</label>
@@ -80,7 +80,6 @@
   </div>
 </template>
 
-<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
 <script>
 import Vue from 'vue'
 import axios from 'axios'
@@ -120,21 +119,36 @@ export default {
   },
   watch:{
   },
-  created () {
+  mounted () {
+      let memberId = this.$store.state.memberId
+      console.log('MyRoom memberId : ' + memberId)
+      this.getMyRoomInfo(memberId)
+      this.getMyRequestInfo(memberId)
+      //const component = this
+      
 
-      Kakao.API.request({
+      /*Kakao.API.request({
           url: '/v2/user/me',
           success: function(res) {
             console.log('SUCCESS : ' + JSON.stringify(res))
-            //router.push('/myRoom/')
+            memberId = res.id
+            console.log('memberId : ' + memberId)
+            console.log('res.id : ' + res.id)
+            component.getMyRoomInfo(memberId)
+            component.getMyRequestInfo(memberId)
           },
           fail: function(error) {
             console.log('FAIL : ' + JSON.stringify(error))
           }
-	  });
-
-      let memberId = this.$store.state.memberId
-      console.log('mounted() this.$store.state.roomId : ' + this.$store.state.roomId)
+      });*/
+  },
+  updated() {
+    //console.log('22222222222222222')
+  },
+  methods: {
+    getMyRoomInfo (memberId) {
+      this.myRoom.memberId = memberId
+      this.$store.state.memberId = memberId
       const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/' + memberId
       console.log('url : ' + MY_ROOM_INFO_REQUEST)
       console.log('isExist : ' + this.isExist)
@@ -150,7 +164,7 @@ export default {
         const statusCode = res.data.statusCode
         const statusMsg = res.data.statusMsg
 
-        if (total > 0 && statusCode === '200') {
+        if (total > 0 && statusCode === '200' && resultObj !== undefined) {
           this.$store.state.isEditable = true
           this.$store.state.isExist = true
           this.total = res.data.total
@@ -167,17 +181,14 @@ export default {
           this.myRoom.intro = resultObj.intro
         }
       })
-      const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/room/applyRoom/' + this.$store.state.roomId
+    },
+    getMyRequestInfo (memberId) {
+      const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/myRequestInfo/' + memberId
     
       axios.get(MY_ROOM_REQUESTER_LIST).then((res) => {
         this.myRoom.myRoomRequesterList = res.data.resultItems
       })
-  },
-  updated() {
-    //console.log('22222222222222222')
-  },
-  methods: {
-
+    },
     enableEditMyRoom () {
       this.isEditable = true
       const memberId = this.$store.state.memberId

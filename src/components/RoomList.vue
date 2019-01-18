@@ -103,7 +103,7 @@ export default {
       })
     }
   },
-  created () {
+  mounted () {
     console.log('Global account name : ' + this.$store.state.userId)
     const ROOM_LIST_REQUEST = Vue.prototype.$serverIp + '/room/'
     console.log('ROOM_LIST_REQUEST : ' + ROOM_LIST_REQUEST)

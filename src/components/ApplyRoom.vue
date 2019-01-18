@@ -58,8 +58,8 @@ export default {
       })
     }
   },
-  created () {
-    const APPLIED_ROOM_LIST_REQ_URL = Vue.prototype.$serverIp + '/room/myApplyInfo/' + this.$store.state.memberId //this.memberId
+  mounted () {
+    const APPLIED_ROOM_LIST_REQ_URL = Vue.prototype.$serverIp + '/myRequestInfo/' + this.$store.state.memberId //this.memberId
     console.log('url : ' + APPLIED_ROOM_LIST_REQ_URL)
     
     this.getAppliedRoomList(APPLIED_ROOM_LIST_REQ_URL)

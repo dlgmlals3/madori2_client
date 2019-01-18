@@ -6,7 +6,7 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
     roomId: '',
-    memberId: 'madori2',
+    memberId: '',
     isExist: false,
     isEditable: false
   }

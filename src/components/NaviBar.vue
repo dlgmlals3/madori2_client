@@ -13,7 +13,7 @@
             <router-link :to="'/applyRoom/' + naviMemberId">내가 신청한 방보기</router-link>
           </li>
           <li>
-            <input type="text" class="form-control" v-model="naviMemberId" placeholder="naviMemberId">
+            <input type="text" class="form-control" v-model="naviMemberId">
           </li>
           <li>
             <button type="button" class="btn btn-primary" @click="setMemberId">Set MemberId</button>
@@ -23,6 +23,8 @@
     </nav>
   </div>
 </template>
+
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
 
 <script>
 import Vue from 'vue'
@@ -40,7 +42,21 @@ export default {
       }
     },
   created() {
+    const component = this
 
+    Kakao.API.request({
+          url: '/v2/user/me',
+          success: function(res) {
+            console.log('SUCCESS : ' + JSON.stringify(res))
+            component.$store.state.memberId = res.id
+            console.log('this.$store.state.memberId : ' + component.$store.state.memberId)
+            console.log('res.id : ' + res.id)
+          },
+          fail: function(error) {
+            console.log('FAIL : ' + JSON.stringify(error))
+          }
+      });
+    this.naviMemberId = this.$store.state.memberId
   },
   methods: {
     setMemberId () {

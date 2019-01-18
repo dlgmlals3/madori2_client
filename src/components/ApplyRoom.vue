@@ -11,15 +11,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(room, index) in appliedRoomList" :key="room.memberId" @click="$router.push('/member/' + room.memberId)">
+        <tr v-for="(room, index) in appliedRoomList" :key="room.roomId.memberId" @click="$router.push('/member/' + room.memberId)">
           <th scope="row">{{ index + 1}}</th>
           <td>
             <div v-if="room.place === 'Mirage'"> <img :src="arenaImage" width="100" height="100"/> </div>
             <div v-else-if="room.place === 'Crown Victoria'"> <img :src="kakaoImage" width="100" height="100"/> </div>
             <div v-else> <img :src="defaultImage" width="100" height="100"/> </div>
           </td>
-          <td>{{room.title}}</td>
-          <td>{{room.memberId}}</td>
+          <td>{{room.roomId.title}}</td>
+          <td>{{room.roomId.memberId}}</td>
         </tr>
       </tbody>
     </table>
@@ -49,7 +49,7 @@ export default {
     getAppliedRoomList (requestUrl) {
       axios.get(requestUrl).then((res) => {
         const resultObj = res.data
-
+        console.log('result : ' + res)
         if (resultObj.statusCode === '200') {
           this.appliedRoomList = resultObj.resultItems
         } else {

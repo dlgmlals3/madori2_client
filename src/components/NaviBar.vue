@@ -48,15 +48,15 @@ export default {
           url: '/v2/user/me',
           success: function(res) {
             console.log('SUCCESS : ' + JSON.stringify(res))
-            component.$store.state.memberId = res.id
-            console.log('this.$store.state.memberId : ' + component.$store.state.memberId)
+            //component.$store.state.memberId = res.id
+            //console.log('this.$store.state.memberId : ' + component.$store.state.memberId)
             console.log('res.id : ' + res.id)
           },
           fail: function(error) {
             console.log('FAIL : ' + JSON.stringify(error))
           }
       });
-    this.naviMemberId = this.$store.state.memberId
+    //this.naviMemberId = this.$store.state.memberId
   },
   methods: {
     setMemberId () {

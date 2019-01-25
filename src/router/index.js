@@ -3,7 +3,7 @@ import Login from '@/components/Login'
 import MyRoom from '@/components/MyRoom'
 import RoomList from '@/components/RoomList'
 import RoomDetail from '@/components/RoomDetail'
-import ApplyRoom from '@/components/ApplyRoom'
+import ApplyRoomList from '@/components/ApplyRoomList'
 import MemberDetail from '@/components/MemberDetail'
 import VueRouter from 'vue-router'
 
@@ -35,8 +35,8 @@ export default new VueRouter({
     },
     {
         path: '/applyRoom/:memberId',
-        name: 'ApplyRoom',
-        component: ApplyRoom,
+        name: 'ApplyRoomList',
+        component: ApplyRoomList,
         props: true
     },
     {

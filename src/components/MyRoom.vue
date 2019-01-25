@@ -150,13 +150,8 @@ export default {
       this.myRoom.memberId = memberId
       this.$store.state.memberId = memberId
       const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/' + memberId
-      console.log('url : ' + MY_ROOM_INFO_REQUEST)
-      console.log('isExist : ' + this.isExist)
-      console.log('isEditable : ' + this.isEditable)
       this.isExist = this.$store.state.isExist
       this.isEditable = this.$store.state.isEditable
-      console.log('after isExist : ' + this.isExist)
-      console.log('after isEditable : ' + this.isEditable)
       
       axios.get(MY_ROOM_INFO_REQUEST).then((res) => {
         const total = res.data.total
@@ -196,8 +191,6 @@ export default {
       
       const GET_MY_ROOM_INFO_URI = Vue.prototype.$serverIp + '/room/' + memberId
 
-      console.log('GET_MY_ROOM_INFO_URI : ' + GET_MY_ROOM_INFO_URI)
-
       axios.get(GET_MY_ROOM_INFO_URI).then((res) => {
         this.total = res.data.total
         if (this.total > 0) {
@@ -217,9 +210,7 @@ export default {
       const URI = Vue.prototype.$serverIp + '/room/'
       this.myRoom.memberId = this.$store.state.memberId
       axios.post(URI, this.myRoom).then((res) => {
-        console.log('store memberid : ' + this.$store.state.memberId)
         this.$store.state.roomId = res.data.roomId
-        console.log('store roomId : ' + this.$store.state.memberId)
         
         //this.$router.push('/myRoom')
         this.$store.state.isExist = true

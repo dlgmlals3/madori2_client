@@ -51,7 +51,15 @@ export default {
   data () {
   	return { // use in property
   		entryPicture: require('../assets/login/logo.png'),
-  		kakaotalkPicture: require('../assets/login/kr/kakao_account_login_btn_large_wide.png'),
+      kakaotalkPicture: require('../assets/login/kr/kakao_account_login_btn_large_wide.png'),
+      member: {
+        id: '', 
+        nickName: '',
+        profileImage: '',
+        thunbnailImage: '',
+        ageRange: '',
+        gender: ''
+      }
   	}
   },
   computed: {
@@ -76,12 +84,45 @@ export default {
     },
     onSuccess(authObj) {
         const router = this.$router
+        const member = this.member
         console.log("onSuccess, authObj : " + JSON.stringify(authObj))
-        let token = authObj.access_token
-        console.log('token : ' + token)
+        //console.log('token : ' + token)
 
-        Kakao.Auth.setAccessToken(token);
-        this.$router.push('/myRoom/')
+
+        Kakao.API.request({
+          url: '/v2/user/me',
+          success: function(res) {
+            console.log('SUCCESS : ' + JSON.stringify(res))
+            
+            let memberProperties = res.properties
+            let memberKakaoAccount = res.kakao_account
+            //console.log('memberInfo id : ' + this.member.id)
+            console.log('res id : ' + res.id)
+            //this.member.id = res.id
+            member.id = res.id
+            member.nickName = memberProperties.nickname
+            member.profileImage = memberProperties.profile_image
+            member.thumbnailImage = memberProperties.thumbnail_image
+            member.ageRange = memberKakaoAccount.age_range
+            member.gender = memberKakaoAccount.gender
+
+            console.log('member id : ' + member.id)
+            console.log('member nickName : ' + member.nickName)
+            console.log('member thumbnailImage : ' + member.thumbnailImage)
+            console.log('member ageRange : ' + member.ageRange)
+            console.log('member gender : ' + member.gender)
+
+            //router.push('/myRoom/')
+          },
+          fail: function(error) {
+            console.log('FAIL : ' + JSON.stringify(error))
+          }
+	      });
+
+        
+
+
+        //this.$router.push('/myRoom/')
         /*Kakao.API.request({
           url: '/v2/user/me',
           success: function(res) {

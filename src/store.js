@@ -7,6 +7,7 @@ export const store = new Vuex.Store({
   state: {
     roomId: '',
     memberId: '',
+    isAppliedRoom: false,
     isExist: false,
     isEditable: false
   }

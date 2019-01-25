@@ -92,21 +92,18 @@ export default {
     },
     searchRoomList() {
       const SEARCH_REQ_URL = Vue.prototype.$serverIp + '/room/search/' + this.keyword
-      console.log('url : ' + SEARCH_REQ_URL)
 
       axios.get(SEARCH_REQ_URL).then((res) => {
         const resultObj = res.data
         this.roomList = resultObj.resultItems
         this.total = resultObj.total
-        console.log('axios total : ' + resultObj.total)
         this.pageChange()
       })
     }
   },
   mounted () {
-    console.log('Global account name : ' + this.$store.state.userId)
+    this.$store.state.isAppliedRoom = false
     const ROOM_LIST_REQUEST = Vue.prototype.$serverIp + '/room/'
-    console.log('ROOM_LIST_REQUEST : ' + ROOM_LIST_REQUEST)
 
     this.getRoomList(ROOM_LIST_REQUEST)
   },

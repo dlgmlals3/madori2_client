@@ -58,16 +58,15 @@
           {{requester.memberId}}
         </li>
       </ul>
-    <div v-if="room.roomId === room.requestMemberId">
-      <button class="btn btn-primary" > 방 수정하기 </button>
-      <button class="btn btn-primary" @click="$router.push('/room/')"> 목록으로 돌아가기 </button>
+    <div v-if="isAppliedRoom === true">  <!-- hide button -->
+
     </div>
     <div v-else>
-      <button class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" @click="applyRoom" > 가치 놀자고 연락하고 싶어 </button>
-      <button @click="$router.push('/room/')" class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" > 목록으로 돌아가기 </button>
-      <button @click="$router.push('/room/')" class="btn btn-primary" v-else  > 신청이 완료된 핫한 방입니다.목록으로 돌아가기 {{room.maxMemberNum}},  {{room.joinedMemberCount}} </button>
+      <button class="btn btn-primary" v-if="(room.maxMemberNum > room.joinedMemberCount) " @click="applyRoom" > 가치 놀자고 연락하고 싶어 </button>
+      <button @click="$router.push('/room/')" class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" > 신청이 완료된 핫한 방입니다. 목록으로 돌아가기 {{room.maxMemberNum}},  {{room.joinedMemberCount}}</button>
+      <button @click="$router.push('/room/')" class="btn btn-primary" v-else  > 목록으로 돌아가기 {{room.maxMemberNum}},  {{room.joinedMemberCount}} </button>
     </div>
-  </div>
+    </div>
 </template>
 
 <script>
@@ -83,6 +82,7 @@ export default {
   },
   data () {
     return {
+      isAppliedRoom: false,
       room: {
         roomId: '',
         title: '',
@@ -131,7 +131,6 @@ export default {
         }
 
         const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/room/applyRoom/' + this.room.roomId
-        console.log('MY_ROOM_REQUESTER_LIST : ' + MY_ROOM_REQUESTER_LIST)
       
         axios.get(MY_ROOM_REQUESTER_LIST).then((res) => {
           this.room.myRoomRequesterList = res.data.resultItems
@@ -139,12 +138,8 @@ export default {
       })
     },
     getMemberDetail(requestMemberId) {
-      console.log('requestMemberId : ' + requestMemberId)
       this.room.requestMemberId = requestMemberId
       this.room.roomId = this.$store.state.roomId
-      console.log('this.$store.state.memberId : ' + this.$store.state.memberId)
-
-      console.log('requestMemberId : ' + this.room.requestMemberId)
       this.$router.push('/member/' + this.room.requestMemberId)
     },
     applyRoom() {
@@ -158,9 +153,9 @@ export default {
       })
     }
   },
-  created () {
+  mounted () {
+    this.isAppliedRoom = this.$store.state.isAppliedRoom
     const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/room/' + this.memberId
-    console.log('ROOM_DETAIL_REQUEST : ' + ROOM_DETAIL_REQUEST)
     this.getRoomDetail(ROOM_DETAIL_REQUEST)
   },
   components: {

@@ -8,18 +8,20 @@
           <th scope="col">Main Image</th>
           <th scope="col">Title</th>
           <th scope="col">MemberId</th>
+          <th scope="col">room.memberId</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(room, index) in appliedRoomList" :key="room.roomId.memberId" @click="$router.push('/room/' + room.memberId)">
+        <tr v-for="(room, index) in appliedRoomList" :key="room._id" @click="$router.push('/room/' + room._id)">
           <th scope="row">{{ index + 1}}</th>
           <td>
             <div v-if="room.place === 'Mirage'"> <img :src="arenaImage" width="100" height="100"/> </div>
             <div v-else-if="room.place === 'Crown Victoria'"> <img :src="kakaoImage" width="100" height="100"/> </div>
             <div v-else> <img :src="defaultImage" width="100" height="100"/> </div>
           </td>
-          <td>{{room.roomId.title}}</td>
-          <td>{{room.roomId.memberId}}</td>
+          <td>{{room._id}}</td>
+          <td>{{room.memberId}}</td>
+          <td>{{room.requestStatus}}</td>
         </tr>
       </tbody>
     </table>
@@ -50,6 +52,7 @@ export default {
         const resultObj = res.data
         if (resultObj.statusCode === '200') {
           this.appliedRoomList = resultObj.resultItems
+          console.log('resultList size :  ' + this.appliedRoomList.length)
         } else {
           
         }

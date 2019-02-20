@@ -8,6 +8,7 @@
           <th scope="col">Main Image</th>
           <th scope="col">Title</th>
           <th scope="col">MemberId</th>
+          <th scope="col">roomId (_id)</th>
         </tr>
       </thead>
       <tbody>
@@ -20,6 +21,7 @@
           </td>
           <td>{{room.roomId.title}}</td>
           <td>{{room.roomId.memberId}}</td>
+          <td>{{room.roomId._id}}</td>
         </tr>
       </tbody>
     </table>

@@ -10,13 +10,16 @@
             <router-link to="/room">방목록 보기</router-link>
           </li>
           <li>
-            <router-link :to="'/applyRoom/' + naviMemberId">내가 신청한 방보기</router-link>
+            <router-link :to="'/applyRoom/' + naviMemberId">내가 신청한 방보기 setMember 정보로</router-link>
           </li>
           <li>
             <input type="text" class="form-control" v-model="naviMemberId">
           </li>
           <li>
             <button type="button" class="btn btn-primary" @click="setMemberId">Set MemberId</button>
+          </li>
+          <li>
+            <router-link :to="'/applyRoom/' + storedMemberId">내가 신청한 방보기 내 member 정보로</router-link>
           </li>
         </ul>
       </div>
@@ -28,6 +31,7 @@
 
 <script>
 import Vue from 'vue'
+import axios from 'axios'
 
 Vue.component('navi-bar', {
   // 옵션
@@ -38,31 +42,25 @@ export default {
   data () {
     return {
         keyword: '',
-        naviMemberId: ''
+        naviMemberId: '',
+        storedMemberId: ''
       }
     },
   created() {
-    const component = this
-
-    Kakao.API.request({
-          url: '/v2/user/me',
-          success: function(res) {
-            console.log('SUCCESS : ' + JSON.stringify(res))
-            //component.$store.state.memberId = res.id
-            //console.log('this.$store.state.memberId : ' + component.$store.state.memberId)
-            console.log('res.id : ' + res.id)
-          },
-          fail: function(error) {
-            console.log('FAIL : ' + JSON.stringify(error))
-          }
-      });
-    //this.naviMemberId = this.$store.state.memberId
+    this.storedMemberId = this.$store.state.memberId
   },
   methods: {
     setMemberId () {
       this.$store.state.memberId = this.naviMemberId
+      /*const MY_ROOM_ID_REQEUST = Vue.prototype.$serverIp + '/room/' + this.naviMemberId
+      console.log('MY_ROOM_ID_REQEUST : ' + MY_ROOM_ID_REQEUST)
       console.log('this naviMemberId : ' + this.naviMemberId)
-      console.log('store memberId : ' + this.$store.state.memberId)
+      axios.get(MY_ROOM_ID_REQEUST).then((res) => {
+        console.log('roomId : ' + res.data.resultItems._id)
+        this.$store.state.roomId = res.data.resultItems._id
+        console.log('store memberId : ' + this.$store.state.memberId)
+        console.log('store roomId : ' + this.$store.state.roomId)
+      });*/
     }
   }
 }

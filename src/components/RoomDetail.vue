@@ -53,8 +53,8 @@
       <div class="col-sm-8" style="background-color:lavenderblush;">{{room.registDate}}</div>
     </div>
     <ul class="list-group list-group-flush">
-        <li class="list-group-item"  v-for="requester of room.myRoomRequesterList" :key="requester.memberId"
-        @click="getMemberDetail(requester.memberId)">
+        <li class="list-group-item"  v-for="requester of room.myRoomRequesterList" :key="requester.roomId"
+        @click="getMemberDetail(requester.roomId)">
           {{requester.memberId}}
         </li>
       </ul>
@@ -111,8 +111,10 @@ export default {
         const resultObj = res.data
 
         if (resultObj.statusCode === '200') {
-          const room = resultObj.resultItem
-          this.room.roomId = room.roomId
+          //const room = resultObj.resultItem
+          const room = resultObj.resultItems
+          //this.room.roomId = room.roomId
+          this.room.roomId = room._id
           this.room.title = room.title
           this.room.date = room.date
           this.room.place = room.place
@@ -126,6 +128,9 @@ export default {
           this.room.openUrl = room.openUrl
           this.room.intro = room.intro
           this.room.registDate = room.registDate
+
+          // added 190220
+          this.$store.state.roomId = this.room.roomId
         } else {
           console.log('resultObj.statusCode != 200')
         }
@@ -148,6 +153,8 @@ export default {
       this.room.requestMemberId = this.$store.state.memberId
       this.room.roomId = this.$store.state.roomId
 
+
+
       axios.post(APPLY_ROOM_REQ_URL, this.room).then(res => {
         console.log('res : ' + res)
       })
@@ -156,6 +163,11 @@ export default {
   mounted () {
     this.isAppliedRoom = this.$store.state.isAppliedRoom
     const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/room/' + this.memberId
+    console.log('roomDetailRequestUrl : ' + ROOM_DETAIL_REQUEST)
+    this.room.requestMemberId = this.$store.state.memberId
+    this.room.roomId = this.$store.state.roomId
+    console.log('this.room.requestMemberId : ' + this.$store.state.memberId)
+    console.log('this.room.roomId : ' + this.$store.state.roomId)
     this.getRoomDetail(ROOM_DETAIL_REQUEST)
   },
   components: {

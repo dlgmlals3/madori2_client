@@ -18,6 +18,7 @@
           <th scope="col">Main Image</th>
           <th scope="col">Title</th>
           <th scope="col">Member Id</th>
+          <th scope="col">room Id (_id)</th>
           <th scope="col">Date</th>
         </tr>
       </thead>
@@ -31,6 +32,7 @@
           </td>
           <td>{{room.title}}</td>
           <td>{{room.memberId}}</td>
+          <td>{{room._id}}</td>
           <td>{{room.regDate}}</td>
         </tr>
       </tbody>

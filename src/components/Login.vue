@@ -53,7 +53,7 @@ export default {
   		entryPicture: require('../assets/login/logo.png'),
       kakaotalkPicture: require('../assets/login/kr/kakao_account_login_btn_large_wide.png'),
       member: {
-        id: '', 
+        kakaoId: '', 
         nickName: '',
         profileImage: '',
         thunbnailImage: '',
@@ -75,7 +75,6 @@ export default {
     },
    
     kakaoLogin() {
-      console.log('click kakaotalk login')
   	  Kakao.init(this.apiKey);
   	  Kakao.Auth.login({
     	success: (authObj) => this.onSuccess(authObj),
@@ -85,54 +84,76 @@ export default {
     onSuccess(authObj) {
         const router = this.$router
         const member = this.member
-        console.log("onSuccess, authObj : " + JSON.stringify(authObj))
-        //console.log('token : ' + token)
-
+        const component = this
 
         Kakao.API.request({
           url: '/v2/user/me',
           success: function(res) {
             console.log('SUCCESS : ' + JSON.stringify(res))
+            const URI = Vue.prototype.$serverIp + '/member/'
             
             let memberProperties = res.properties
             let memberKakaoAccount = res.kakao_account
-            //console.log('memberInfo id : ' + this.member.id)
-            console.log('res id : ' + res.id)
-            //this.member.id = res.id
-            member.id = res.id
+
+            member.kakaoId = res.id
             member.nickName = memberProperties.nickname
             member.profileImage = memberProperties.profile_image
             member.thumbnailImage = memberProperties.thumbnail_image
             member.ageRange = memberKakaoAccount.age_range
             member.gender = memberKakaoAccount.gender
 
-            console.log('member id : ' + member.id)
-            console.log('member nickName : ' + member.nickName)
-            console.log('member thumbnailImage : ' + member.thumbnailImage)
-            console.log('member ageRange : ' + member.ageRange)
-            console.log('member gender : ' + member.gender)
+            component.removeNullMemberInfo(member)
 
-            //router.push('/myRoom/')
+            /*
+            component.$store.state.member.nickName = member.nickName
+            component.$store.state.member.thumbnailImage = member.thumbnailImage
+            component.$store.state.member.ageRange = member.ageRange
+            component.$store.state.member.gender = member.gender
+            */
+            // set member info
+            component.$store.commit('setMemberInfo', member)
+
+            axios.post(URI, member).then((res) => {
+              console.log('res : ' + JSON.stringify(res))
+              component.$store.state.roomId = res.data.roomId
+              component.$store.state.memberId = res.data.memberId
+
+
+              console.log('res.roomId : ' + res.data.roomId)
+              console.log('res.memberId : ' + res.data.memberId)
+              console.log('member nickName : ' + member.nickName)
+              console.log('member ageRange : ' + member.ageRange)
+              console.log('component.$store.state.roomId  : ' + component.$store.state.roomId)
+              console.log('component.$store.state.memberId  : ' + component.$store.state.memberId)
+
+              router.push('/myRoom/')
+            })
+
+            
           },
           fail: function(error) {
             console.log('FAIL : ' + JSON.stringify(error))
           }
 	      });
 
-        
+    },
+    removeNullMemberInfo(member){
+      if(member.nickName === null ){
+        member.nickName = ''
+      }
+      if(member.profileImage === null ){
+        member.profileImage = ''
+      }
+      if(member.thumbnailImage === null ){
+        member.thumbnailImage = ''
+      }
+      if(member.ageRange === null ){
+        member.ageRange = ''
+      }
+      if(member.gender === null ){
+        member.gender = ''
+      }
 
-
-        //this.$router.push('/myRoom/')
-        /*Kakao.API.request({
-          url: '/v2/user/me',
-          success: function(res) {
-            console.log('SUCCESS : ' + JSON.stringify(res))
-            router.push('/myRoom/')
-          },
-          fail: function(error) {
-            console.log('FAIL : ' + JSON.stringify(error))
-          }
-	  });*/
     },
     onFailure(err) {
       console.log("onFailure")
@@ -166,4 +187,3 @@ a {
   color: #42b983;
 }
 </style>
-

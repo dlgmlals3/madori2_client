@@ -28,15 +28,9 @@
       </div>
       <div class="form-row">
         <div class="form-group col-md-6">
-          <label for="price">memberId</label>
-          <input type="number" class="form-control" v-model="myRoom.memberId" placeholder="memberId">
-        </div>
-        <div class="form-group col-md-6">
           <label for="price">가격</label>
           <input type="number" class="form-control" :disabled='isDisabled' v-model="myRoom.price" placeholder="가격">
         </div>
-      </div>
-      <div class="form-row">
         <div class="form-group col-md-6">
           <label for="gender">성별</label>
           <select v-model="myRoom.gender" :disabled='isDisabled' class="form-control">
@@ -45,7 +39,9 @@
             <option value="20">여성</option>
           </select>
         </div>
-        <div class="form-group col-md-4">
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
           <label for="region">지역</label>
           <select v-model="myRoom.region" :disabled='isDisabled' class="form-control">
             <option value="0" selected>전체</option>
@@ -56,7 +52,7 @@
             <option value="50">인계동</option>
           </select>
         </div>
-        <div class="form-group col-md-2">
+        <div class="form-group col-md-6">
           <label for="openUrl">오픈채팅 URL</label>
           <input type="text" class="form-control" :disabled='isDisabled' v-model="myRoom.openUrl" placeholder="오픈채팅 텍스트">
         </div>
@@ -65,7 +61,7 @@
         <label for="intro">소개</label>
         <textarea class="form-control" v-model="myRoom.intro" :disabled='isDisabled' aria-label="With textarea">소개를 입력하세요...</textarea>
       </div>
-      <ul class="list-group list-group-flush">
+      <ul class="list-group list-group-flush" v-if="myRoom.myRoomRequesterList.length > 0">
         <li class="list-group-item" v-for="requester of myRoom.myRoomRequesterList" :key="requester.memberId"
           @click="$router.push('/member/' + requester.memberId)">
           {{requester.memberId}}
@@ -75,7 +71,6 @@
           <button type="button" class="btn btn-primary"  @click="editMyRoom" >방 수정하기 editMyRoom</button>
           <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
           <button type="button" class="btn btn-primary" @click="$router.push('/room/')"> 방 목록 보기 </button>
-      
     </form>
   </div>
 </template>
@@ -123,7 +118,7 @@ export default {
       let memberId = this.$store.state.memberId
       console.log('MyRoom memberId : ' + memberId)
       this.getMyRoomInfo(memberId)
-      this.getMyRequestInfo(memberId)
+      this.getRequesterList(memberId)
       //const component = this
       
 
@@ -155,13 +150,14 @@ export default {
       
       axios.get(MY_ROOM_INFO_REQUEST).then((res) => {
         const total = res.data.total
-        const resultObj = res.data.resultItem
+        const resultObj = res.data.resultItems
         const statusCode = res.data.statusCode
         const statusMsg = res.data.statusMsg
 
         if (total > 0 && statusCode === '200' && resultObj !== undefined) {
-          this.$store.state.isEditable = true
-          this.$store.state.isExist = true
+          console.log('is total > 0 && statusCode === 200 && resultObj !== undefined ')
+          //this.$store.state.isEditable = true
+          //this.$store.state.isExist = true
           this.total = res.data.total
           this.myRoom.statusCode = res.data.statusCode
           this.myRoom.title = resultObj.title
@@ -174,13 +170,18 @@ export default {
           this.myRoom.price = resultObj.price
           this.myRoom.openUrl = resultObj.openUrl
           this.myRoom.intro = resultObj.intro
+        } else {
+          console.log('not total > 0 && statusCode === 200 && resultObj !== undefined ')
         }
       })
     },
-    getMyRequestInfo (memberId) {
-      const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/myRequestInfo/' + memberId
+    getRequesterList (memberId) {
+      console.log('getRequesterList memberId : ' + memberId)
+      console.log('before requestList size : ' + this.myRoom.myRoomRequesterList.length)
+      const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/requestMemberInfo/' + memberId
     
       axios.get(MY_ROOM_REQUESTER_LIST).then((res) => {
+        console.log('after requestList size : ' + this.myRoom.myRoomRequesterList.length)
         this.myRoom.myRoomRequesterList = res.data.resultItems
       })
     },
@@ -209,11 +210,13 @@ export default {
     createMyRoom() {
       const URI = Vue.prototype.$serverIp + '/room/'
       this.myRoom.memberId = this.$store.state.memberId
+      
       axios.post(URI, this.myRoom).then((res) => {
         this.$store.state.roomId = res.data.roomId
+        console.log('res.data.roomId : ' + res.data.roomId)
         
-        //this.$router.push('/myRoom')
-        this.$store.state.isExist = true
+        this.$router.push('/myRoom')
+        //this.$store.state.isExist = true
       })
     },
     editMyRoom() {

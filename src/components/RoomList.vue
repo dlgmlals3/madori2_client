@@ -26,9 +26,7 @@
         <tr v-for="(room, index) in currentRoomList" :key="room.memberId" @click="$router.push('/room/' + room.memberId)">
           <th scope="row">{{ index + 1}}</th>
           <td>
-            <div v-if="room.place === 'Mirage'"> <img :src="arenaImage" width="100" height="100"/> </div>
-            <div v-else-if="room.place === 'Crown Victoria'"> <img :src="kakaoImage" width="100" height="100"/> </div>
-            <div v-else> <img :src="defaultImage" width="100" height="100"/> </div>
+            <img :src="getImgUrl(room.region)" width="200" height="200"/>
           </td>
           <td>{{room.title}}</td>
           <td>{{room.memberId}}</td>
@@ -71,6 +69,26 @@ export default {
     }
   },
   methods: {
+    getRoomList (requestUrl) {
+      console.log('getRoomList')
+      axios.get(requestUrl).then((res) => {
+        const resultObj = res.data
+        this.roomList = resultObj.resultItems
+        this.total = resultObj.total
+        
+        this.pageChange()
+      })
+    },
+    searchRoomList() {
+      const SEARCH_REQ_URL = Vue.prototype.$serverIp + '/room/search/' + this.keyword
+
+      axios.get(SEARCH_REQ_URL).then((res) => {
+        const resultObj = res.data
+        this.roomList = resultObj.resultItems
+        this.total = resultObj.total
+        this.pageChange()
+      })
+    },
     pageChange () {
       let i
       let idx
@@ -84,23 +102,22 @@ export default {
         this.currentRoomList[i] = this.roomList[idx]
       }
     },
-    getRoomList (requestUrl) {
-      axios.get(requestUrl).then((res) => {
-        const resultObj = res.data
-        this.roomList = resultObj.resultItems
-        this.total = resultObj.total
-        this.pageChange()
-      })
-    },
-    searchRoomList() {
-      const SEARCH_REQ_URL = Vue.prototype.$serverIp + '/room/search/' + this.keyword
-
-      axios.get(SEARCH_REQ_URL).then((res) => {
-        const resultObj = res.data
-        this.roomList = resultObj.resultItems
-        this.total = resultObj.total
-        this.pageChange()
-      })
+    getImgUrl (regionCode) {
+      let imageFileName = ''
+      if (regionCode === '10') { // gangnam
+        imageFileName = require('../assets/region/GangNam.jpg')
+      } else if (regionCode === '20') { // itaewon
+        imageFileName = require('../assets/region/Itaewon.jpg')
+      } else if (regionCode === '30') { // hongdae
+        imageFileName = require('../assets/region/HongDae.jpg')
+      } else if (regionCode === '40') { // konkuk
+        imageFileName = require('../assets/region/Konkuk-univ.jpg')
+      } else if (regionCode === '50') { // daehak-ro
+        imageFileName = require('../assets/region/Daehak-ro.jpg')
+      } else {
+        imageFileName = require('../assets/login/logo.png')
+      }
+      return imageFileName
     }
   },
   mounted () {

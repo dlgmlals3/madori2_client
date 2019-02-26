@@ -48,8 +48,8 @@
             <option value="10">강남</option>
             <option value="20">이태원</option>
             <option value="30">홍대</option>
-            <option value="40">구디</option>
-            <option value="50">인계동</option>
+            <option value="40">건대</option>
+            <option value="50">대학로</option>
           </select>
         </div>
         <div class="form-group col-md-6">
@@ -62,9 +62,9 @@
         <textarea class="form-control" v-model="myRoom.intro" :disabled='isDisabled' aria-label="With textarea">소개를 입력하세요...</textarea>
       </div>
       <ul class="list-group list-group-flush" v-if="myRoom.myRoomRequesterList.length > 0">
-        <li class="list-group-item" v-for="requester of myRoom.myRoomRequesterList" :key="requester.memberId"
-          @click="$router.push('/member/' + requester.memberId)">
-          {{requester.memberId}}
+        <li class="list-group-item" v-for="requester of myRoom.myRoomRequesterList" :key="requester.memberId._id"
+          @click="$router.push('/member/' + requester.memberId._id)">
+          카카오아이디 : {{requester.memberId.kakaoId}}, 닉네임 : {{requester.memberId.nickName}}
         </li>
       </ul>
           <button type="button" class="btn btn-primary" @click="createMyRoom">방 만들기</button>
@@ -116,29 +116,11 @@ export default {
   },
   mounted () {
       let memberId = this.$store.state.memberId
-      console.log('MyRoom memberId : ' + memberId)
       this.getMyRoomInfo(memberId)
       this.getRequesterList(memberId)
-      //const component = this
-      
-
-      /*Kakao.API.request({
-          url: '/v2/user/me',
-          success: function(res) {
-            console.log('SUCCESS : ' + JSON.stringify(res))
-            memberId = res.id
-            console.log('memberId : ' + memberId)
-            console.log('res.id : ' + res.id)
-            component.getMyRoomInfo(memberId)
-            component.getMyRequestInfo(memberId)
-          },
-          fail: function(error) {
-            console.log('FAIL : ' + JSON.stringify(error))
-          }
-      });*/
   },
   updated() {
-    //console.log('22222222222222222')
+    
   },
   methods: {
     getMyRoomInfo (memberId) {
@@ -170,18 +152,13 @@ export default {
           this.myRoom.price = resultObj.price
           this.myRoom.openUrl = resultObj.openUrl
           this.myRoom.intro = resultObj.intro
-        } else {
-          console.log('not total > 0 && statusCode === 200 && resultObj !== undefined ')
-        }
+        } // if
       })
     },
     getRequesterList (memberId) {
-      console.log('getRequesterList memberId : ' + memberId)
-      console.log('before requestList size : ' + this.myRoom.myRoomRequesterList.length)
       const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/requestMemberInfo/' + memberId
     
       axios.get(MY_ROOM_REQUESTER_LIST).then((res) => {
-        console.log('after requestList size : ' + this.myRoom.myRoomRequesterList.length)
         this.myRoom.myRoomRequesterList = res.data.resultItems
       })
     },
@@ -198,7 +175,6 @@ export default {
           this.$store.state.isExist = true
           this.isExist = true
 
-          //
           this.$store.state.isEditable = true
           this.isEditable = true
         } else {
@@ -213,7 +189,6 @@ export default {
       
       axios.post(URI, this.myRoom).then((res) => {
         this.$store.state.roomId = res.data.roomId
-        console.log('res.data.roomId : ' + res.data.roomId)
         
         this.$router.push('/myRoom')
         //this.$store.state.isExist = true
@@ -221,7 +196,6 @@ export default {
     },
     editMyRoom() {
       const memberId = this.$store.state.memberId
-      //const URI = Vue.prototype.$serverIp + '/room/' + memberId
       const URI = Vue.prototype.$serverIp + '/room/' + memberId
 
       axios.put(URI, this.myRoom).then((res) => {

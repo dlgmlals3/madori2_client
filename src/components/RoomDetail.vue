@@ -1,9 +1,7 @@
 <template>
   <div class="hello">
     <navi-bar></navi-bar>
-    <img v-if="room.place === '11'" :src="room.arenaImage" width="400" height="400"/>
-    <img v-else-if="room.place === 'Crown Victoria'" :src="room.kakaoImage" width="100" height="100"/>
-    <img v-else :src="room.defaultImage" width="100" height="100"/>
+    <img :src="room.kakaoImage" width="400" height="400"/>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">roomId</div>
       <div class="col-sm-8" style="background-color:lavenderblush;">{{room.roomId}}</div>
@@ -53,11 +51,11 @@
       <div class="col-sm-8" style="background-color:lavenderblush;">{{room.registDate}}</div>
     </div>
     <ul class="list-group list-group-flush">
-        <li class="list-group-item"  v-for="requester of room.myRoomRequesterList" :key="requester.roomId"
-        @click="getMemberDetail(requester.roomId)">
-          {{requester.memberId}}
+        <li class="list-group-item"  v-for="requester of room.myRoomRequesterList" :key="requester.memberId._id"
+        @click="$router.push('/member/' + requester.memberId._id)">
+          카카오아이디 : {{requester.memberId.kakaoId}}, 닉네임 : {{requester.memberId.nickName}}
         </li>
-      </ul>
+    </ul>
     <div v-if="isAppliedRoom === true">  <!-- hide button -->
 
     </div>
@@ -111,9 +109,7 @@ export default {
         const resultObj = res.data
 
         if (resultObj.statusCode === '200') {
-          //const room = resultObj.resultItem
           const room = resultObj.resultItems
-          //this.room.roomId = room.roomId
           this.room.roomId = room._id
           this.room.title = room.title
           this.room.date = room.date
@@ -128,6 +124,7 @@ export default {
           this.room.openUrl = room.openUrl
           this.room.intro = room.intro
           this.room.registDate = room.registDate
+
 
           // added 190220
           this.$store.state.roomId = this.room.roomId
@@ -153,22 +150,27 @@ export default {
       this.room.requestMemberId = this.$store.state.memberId
       this.room.roomId = this.$store.state.roomId
 
-
-
       axios.post(APPLY_ROOM_REQ_URL, this.room).then(res => {
         console.log('res : ' + res)
       })
+    },
+    getKakaoImage(requestUrl) {
+      axios.get(requestUrl).then((res) => {
+          this.room.kakaoImage = res.data.resultItems.thumbnailImage
+          console.log('kakaoImage : ' + this.room.kakaoImage)
+        })
     }
   },
   mounted () {
     this.isAppliedRoom = this.$store.state.isAppliedRoom
     const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/room/' + this.memberId
-    console.log('roomDetailRequestUrl : ' + ROOM_DETAIL_REQUEST)
+    const MEMBER_DETAIL_REQUEST = Vue.prototype.$serverIp + '/member/' + this.memberId
+
     this.room.requestMemberId = this.$store.state.memberId
     this.room.roomId = this.$store.state.roomId
-    console.log('this.room.requestMemberId : ' + this.$store.state.memberId)
-    console.log('this.room.roomId : ' + this.$store.state.roomId)
+    
     this.getRoomDetail(ROOM_DETAIL_REQUEST)
+    this.getKakaoImage(MEMBER_DETAIL_REQUEST)
   },
   components: {
     'NaviBar': NaviBar

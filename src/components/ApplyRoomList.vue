@@ -8,7 +8,7 @@
           <th scope="col">Main Image</th>
           <th scope="col">Title</th>
           <th scope="col">MemberId</th>
-          <th scope="col">room.memberId</th>
+          <th scope="col">신청상태</th>
         </tr>
       </thead>
       <tbody>
@@ -21,7 +21,10 @@
           </td>
           <td>{{room._id}}</td>
           <td>{{room.memberId}}</td>
-          <td>{{room.requestStatus}}</td>
+          <td v-if="room.requestStatus == '10'">신청중</td>
+          <td v-else-if="room.requestStatus == '20'">승인됨</td>
+          <td v-else-if="room.requestStatus == '30'">거절당함</td>
+          <td v-else>몰라</td>
         </tr>
       </tbody>
     </table>
@@ -41,6 +44,7 @@ export default {
       roomId: '',
       requestMemberId: '',
       appliedRoomList: [],
+      requestStatus: '',
       arenaImage: require('../assets/login/arena.jpg'),
       kakaoImage: require('../assets/login/kr/kakao_account_login_btn_large_wide.png'),
       defaultImage: require('../assets/login/logo.png')
@@ -64,6 +68,9 @@ export default {
     const APPLIED_ROOM_LIST_REQ_URL = Vue.prototype.$serverIp + '/myRequestInfo/' + this.$store.state.memberId //this.memberId
     
     this.getAppliedRoomList(APPLIED_ROOM_LIST_REQ_URL)
+  },
+  computed: {
+  
   },
   components: {
     'NaviBar': NaviBar

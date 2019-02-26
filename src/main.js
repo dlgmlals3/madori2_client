@@ -6,11 +6,13 @@ import router from './router'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { store } from './store'
+import VModal from 'vue-js-modal'
 
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 
+Vue.use(VModal, { dynamic: true })
 Vue.prototype.$serverIp = 'http://218.38.52.30:3000'
 Vue.prototype.$accountName = 'madori'
 

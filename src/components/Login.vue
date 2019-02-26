@@ -99,10 +99,18 @@ export default {
             member.nickName = memberProperties.nickname
             member.profileImage = memberProperties.profile_image
             member.thumbnailImage = memberProperties.thumbnail_image
-            member.ageRange = memberKakaoAccount.age_range
-            member.gender = memberKakaoAccount.gender
+            member.ageRange = memberKakaoAccount.has_age_range
+            member.gender = memberKakaoAccount.has_gender
+
+            console.log("before member.kakaoId : " + member.kakaoId)
+            console.log("before member.nickName : " + member.nickName)
+            console.log("before member.profileImage : " + member.profileImage)
+            console.log("before member.thumbnailImage : " + member.thumbnailImage)
+            console.log("before member.ageRange : " + member.ageRange)
+            console.log("before member.gender : " + member.gender)
 
             component.removeNullMemberInfo(member)
+            console.log("URI : " + URI)
 
             /*
             component.$store.state.member.nickName = member.nickName
@@ -112,6 +120,13 @@ export default {
             */
             // set member info
             component.$store.commit('setMemberInfo', member)
+
+            console.log("after member.kakaoId : " + member.kakaoId)
+            console.log("after member.nickName : " + member.nickName)
+            console.log("after member.profileImage : " + member.profileImage)
+            console.log("after member.thumbnailImage : " + member.thumbnailImage)
+            console.log("after member.ageRange : " + member.ageRange)
+            console.log("after member.gender : " + member.gender)
 
             axios.post(URI, member).then((res) => {
               console.log('res : ' + JSON.stringify(res))
@@ -138,20 +153,22 @@ export default {
 
     },
     removeNullMemberInfo(member){
-      if(member.nickName === null ){
+      if(member.nickName === undefined ){
         member.nickName = ''
       }
-      if(member.profileImage === null ){
+      if(member.profileImage === undefined ){
         member.profileImage = ''
       }
-      if(member.thumbnailImage === null ){
+      if(member.thumbnailImage === undefined ){
         member.thumbnailImage = ''
       }
-      if(member.ageRange === null ){
-        member.ageRange = ''
+      if(member.ageRange === false ){
+        console.log('member.ageRange === false')
+        member.ageRange = 'unknown'
       }
-      if(member.gender === null ){
-        member.gender = ''
+      if(member.gender === false ){
+        console.log('member.gender === false')
+        member.gender = 'unknown'
       }
 
     },

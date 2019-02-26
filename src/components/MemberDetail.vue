@@ -1,15 +1,38 @@
 <template>
   <div class="hello">
     <navi-bar></navi-bar>
-    <img v-if="room.place === '11'" :src="room.arenaImage" width="400" height="400"/>
-    <img v-else-if="room.place === 'Crown Victoria'" :src="room.kakaoImage" width="100" height="100"/>
-    <img v-else :src="room.defaultImage" width="100" height="100"/>
+    <modals-container />
+    <img :src="member.thumbnailImage" width="400" height="400"/>
     <div class="row detailDiv">
-      <div class="col-sm-4" style="background-color:lavender;">requestMemberId</div>
+      <div class="col-sm-4" style="background-color:lavender;">memberID</div>
       <div class="col-sm-8" style="background-color:lavenderblush;">{{requestMemberId}}</div>
     </div>
+    <div class="row detailDiv">
+      <div class="col-sm-4" style="background-color:lavender;">카카오 id</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{member.kakaoId}}</div>
+    </div>
+    <div class="row detailDiv">
+      <div class="col-sm-4" style="background-color:lavender;">닉네임</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{member.nickName}}</div>
+    </div>
+    <div class="row detailDiv">
+      <div class="col-sm-4" style="background-color:lavender;">썸네일</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{member.thumbnailImage}}</div>
+    </div>
+    <div class="row detailDiv">
+      <div class="col-sm-4" style="background-color:lavender;">연령대</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{member.ageRange}}</div>
+    </div>
+    <div class="row detailDiv">
+      <div class="col-sm-4" style="background-color:lavender;">성별</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{member.gender}}</div>
+    </div>
+    <div class="row detailDiv">
+      <div class="col-sm-4" style="background-color:lavender;">request status</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{member.requestStatus}}</div>
+    </div>
     <div>
-      <button @click="acceptApplicant" class="btn btn-primary" > 이 친구랑 가치놀기 </button>
+      <button @click="callAcceptModal" class="btn btn-primary" > 이 친구랑 가치놀기 </button>
       <button @click="rejectApplicant" class="btn btn-primary" > 솔직히 너랑 놀기 싫어 </button>
       <button @click="$router.go(-1)" class="btn btn-primary"  > 뒤로 가기 </button>
     </div>
@@ -21,41 +44,42 @@ import Vue from 'vue'
 import axios from 'axios'
 import NaviBar from './NaviBar'
 import LoginVue from './Login.vue'
+import AcceptApplyModal from './AcceptApplyModal'
+
 
 export default {
-  name: 'RoomDetail',
+  name: 'MemberDetail',
   props: {
     requestMemberId: String
   },
   data () {
     return {
-      room: {
+      member: {
         roomId: '',
-        title: '',
-        maxMemberNum: '4',
-        joinedMemberCount: 1,
-        date: '',
-        price: '',
-        ageMax: '',
-        ageMin: '',
+        kakaoId: '',
+        nickName: '',
+        profileImage: '',
+        thumbnailImage: '',
+        ageRange: '',
         gender: '',
-        region: '',
-        openUrl: '',
-        intro: '',
-        registDate: '',
-        requestStatus: '',
-        myRoomRequesterList: [],
-        arenaImage: require('../assets/login/arena.jpg'),
-        kakaoImage: require('../assets/login/kr/kakao_account_login_btn_large_wide.png'),
-        defaultImage: require('../assets/login/logo.png')
+        requestStatus: ''
       }
     }
   },
   methods: {
+    callAcceptModal() {
+      this.$modal.show(AcceptApplyModal
+      /*, {
+          modal: this.$modal }
+      , {
+          name: 'accept-container',
+          width : '330px',
+          height : '130px',
+          draggable: true
+        }*/)
+      },
     acceptApplicant() {
-      console.log('acceptApplicant')
       const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/status'
-      console.log('APPLY_ROOM_REQ_URL : ' + APPLY_ROOM_REQ_URL)
       //TODO change to Kakao Session id (my Id)
       this.room.roomId = this.$store.state.roomId
       this.room.requestMemberId = this.requestMemberId
@@ -85,11 +109,16 @@ export default {
     const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/member/' + this.requestMemberId
     console.log('ROOM_DETAIL_REQUEST : ' + ROOM_DETAIL_REQUEST)
     axios.get(ROOM_DETAIL_REQUEST).then((res) => {
-      this.room.myRoomRequesterList = res.data.resultItems
+      this.member = res.data.resultItems
+      this.member.requestStatus = '승인. 이부분 어떻게 처리할지 고민해야 함'
     })
   },
+  mounted () {
+    //this.callAcceptModal() 
+  },
   components: {
-    'NaviBar': NaviBar
+    'NaviBar': NaviBar,
+    'AcceptApplyModal': AcceptApplyModal
   }
 }
 </script>

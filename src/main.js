@@ -12,7 +12,12 @@ Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 
-Vue.use(VModal, { dynamic: true })
+Vue.use(
+          VModal, { 
+            dynamic: true,
+            dialog: true
+          }
+        )
 Vue.prototype.$serverIp = 'http://218.38.52.30:3000'
 Vue.prototype.$accountName = 'madori'
 

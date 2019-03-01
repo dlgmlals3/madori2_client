@@ -89,8 +89,8 @@ export default {
         Kakao.API.request({
           url: '/v2/user/me',
           success: function(res) {
-            console.log('SUCCESS : ' + JSON.stringify(res))
-            const URI = Vue.prototype.$serverIp + '/member/'
+            const GET_MEMBER_INFO_URI = Vue.prototype.$serverIp + '/member/'
+            const GET_ROOM_INFO_URI = Vue.prototype.$serverIp + '/room/'
             
             let memberProperties = res.properties
             let memberKakaoAccount = res.kakao_account
@@ -102,44 +102,30 @@ export default {
             member.ageRange = memberKakaoAccount.has_age_range
             member.gender = memberKakaoAccount.has_gender
 
-            console.log("before member.kakaoId : " + member.kakaoId)
-            console.log("before member.nickName : " + member.nickName)
-            console.log("before member.profileImage : " + member.profileImage)
-            console.log("before member.thumbnailImage : " + member.thumbnailImage)
-            console.log("before member.ageRange : " + member.ageRange)
-            console.log("before member.gender : " + member.gender)
-
             component.removeNullMemberInfo(member)
-            console.log("URI : " + URI)
 
-            /*
-            component.$store.state.member.nickName = member.nickName
-            component.$store.state.member.thumbnailImage = member.thumbnailImage
-            component.$store.state.member.ageRange = member.ageRange
-            component.$store.state.member.gender = member.gender
-            */
             // set member info
             component.$store.commit('setMemberInfo', member)
 
-            console.log("after member.kakaoId : " + member.kakaoId)
-            console.log("after member.nickName : " + member.nickName)
-            console.log("after member.profileImage : " + member.profileImage)
-            console.log("after member.thumbnailImage : " + member.thumbnailImage)
-            console.log("after member.ageRange : " + member.ageRange)
-            console.log("after member.gender : " + member.gender)
 
-            axios.post(URI, member).then((res) => {
-              console.log('res : ' + JSON.stringify(res))
-              component.$store.state.roomId = res.data.roomId
+            axios.post(GET_MEMBER_INFO_URI, member).then((res) => {
+              console.log('post res : ' + JSON.stringify(res))
+              //component.$store.state.roomId = res.data.roomId
               component.$store.state.memberId = res.data.memberId
 
+              axios.get(GET_ROOM_INFO_URI + res.data.memberId).then((res) => {
+                console.log('GET_ROOM_INFO_URI res : ' + JSON.stringify(res))
+                component.$store.state.roomId = res.data.resultItems._id
+                console.log('res.roomId : ' + res.data.roomId)
+                console.log('res.memberId : ' + res.data.memberId)
+                console.log('member nickName : ' + member.nickName)
+                console.log('member ageRange : ' + member.ageRange)
+                console.log('component.$store.state.roomId  : ' + component.$store.state.roomId)
+                console.log('component.$store.state.memberId  : ' + component.$store.state.memberId)
+              })
 
-              console.log('res.roomId : ' + res.data.roomId)
-              console.log('res.memberId : ' + res.data.memberId)
-              console.log('member nickName : ' + member.nickName)
-              console.log('member ageRange : ' + member.ageRange)
-              console.log('component.$store.state.roomId  : ' + component.$store.state.roomId)
-              console.log('component.$store.state.memberId  : ' + component.$store.state.memberId)
+
+              
 
               router.push('/myRoom/')
             })

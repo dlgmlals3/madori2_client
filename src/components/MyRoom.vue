@@ -64,7 +64,7 @@
       <ul class="list-group list-group-flush" v-if="myRoom.myRoomRequesterList.length > 0">
         <li class="list-group-item" v-for="requester of myRoom.myRoomRequesterList" :key="requester.memberId._id"
           @click="$router.push('/member/' + requester.memberId._id)">
-          카카오아이디 : {{requester.memberId.kakaoId}}, 닉네임 : {{requester.memberId.nickName}}
+          카카오아이디 : {{requester.memberId.kakaoId}}, 닉네임 : {{requester.memberId.nickName}} 신청상태 : {{requester.requestStatus}}
         </li>
       </ul>
           <button type="button" class="btn btn-primary" @click="createMyRoom">방 만들기</button>

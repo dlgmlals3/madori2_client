@@ -12,15 +12,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(room, index) in appliedRoomList" :key="room._id" @click="$router.push('/room/' + room._id)">
+        <tr v-for="(room, index) in appliedRoomList" :key="room.roomId.memberId" @click="$router.push('/room/' + room.roomId.memberId)">
           <th scope="row">{{ index + 1}}</th>
           <td>
             <div v-if="room.place === 'Mirage'"> <img :src="arenaImage" width="100" height="100"/> </div>
             <div v-else-if="room.place === 'Crown Victoria'"> <img :src="kakaoImage" width="100" height="100"/> </div>
             <div v-else> <img :src="defaultImage" width="100" height="100"/> </div>
           </td>
-          <td>{{room._id}}</td>
-          <td>{{room.memberId}}</td>
+          <td>{{room.roomId.title}}</td>
+          <td>{{room.roomId.memberId}}</td>
           <td v-if="room.requestStatus == '10'">신청중</td>
           <td v-else-if="room.requestStatus == '20'">승인됨</td>
           <td v-else-if="room.requestStatus == '30'">거절당함</td>

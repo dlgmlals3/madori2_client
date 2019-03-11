@@ -59,7 +59,7 @@ export default {
     return {
       page: 1,
       total: 0,
-      perPage: 10,
+      perPage: 3,
       keyword: '',
       roomList: [],
       currentRoomList: [],

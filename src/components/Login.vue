@@ -95,6 +95,7 @@ export default {
             let memberProperties = res.properties
             let memberKakaoAccount = res.kakao_account
 
+
             member.kakaoId = res.id
             member.nickName = memberProperties.nickname
             member.profileImage = memberProperties.profile_image
@@ -109,27 +110,14 @@ export default {
 
 
             axios.post(GET_MEMBER_INFO_URI, member).then((res) => {
-              console.log('post res : ' + JSON.stringify(res))
               //component.$store.state.roomId = res.data.roomId
               component.$store.state.memberId = res.data.memberId
 
               axios.get(GET_ROOM_INFO_URI + res.data.memberId).then((res) => {
-                console.log('GET_ROOM_INFO_URI res : ' + JSON.stringify(res))
                 component.$store.state.roomId = res.data.resultItems._id
-                console.log('res.roomId : ' + res.data.roomId)
-                console.log('res.memberId : ' + res.data.memberId)
-                console.log('member nickName : ' + member.nickName)
-                console.log('member ageRange : ' + member.ageRange)
-                console.log('component.$store.state.roomId  : ' + component.$store.state.roomId)
-                console.log('component.$store.state.memberId  : ' + component.$store.state.memberId)
               })
-
-
-              
-
               router.push('/myRoom/')
             })
-
             
           },
           fail: function(error) {

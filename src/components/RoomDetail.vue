@@ -15,8 +15,12 @@
       <div class="col-sm-8" style="background-color:lavenderblush;">{{room.title}}</div>
     </div>
     <div class="row detailDiv">
-      <div class="col-sm-4" style="background-color:lavender;">날짜</div>
+      <div class="col-sm-4" style="background-color:lavender;">날짜 regDate</div>
       <div class="col-sm-8" style="background-color:lavenderblush;">{{room.regDate}}</div>
+    </div>
+    <div class="row detailDiv">
+      <div class="col-sm-4" style="background-color:lavender;">등록일자</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.registDate}}</div>
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">장소</div>
@@ -46,24 +50,20 @@
       <div class="col-sm-4" style="background-color:lavender;">최대인원</div>
       <div class="col-sm-8" style="background-color:lavenderblush;">{{room.maxMemberNum}} 명</div>
     </div>
-    <div class="row detailDiv">
-      <div class="col-sm-4" style="background-color:lavender;">등록일자</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.registDate}}</div>
-    </div>
     <ul class="list-group list-group-flush">
         <li class="list-group-item"  v-for="requester of room.myRoomRequesterList" :key="requester.memberId._id"
         @click="$router.push('/member/' + requester.memberId._id)">
-          카카오아이디 : {{requester.memberId.kakaoId}}, 닉네임 : {{requester.memberId.nickName}}
+          카카오아이디 : {{requester.memberId.kakaoId}}, 닉네임 : {{requester.memberId.nickName}}, 신청상태 : {{requester.requestStatus}}
         </li>
     </ul>
     <div v-if="isAppliedRoom === true">  <!-- hide button -->
 
     </div>
     <div v-else>
-      <button class="btn btn-primary" v-if="(room.maxMemberNum > room.joinedMemberCount) " @click="applyRoom" > 가치 놀자고 연락하고 싶어 </button>
+      <button class="btn btn-primary" v-if="true" @click="applyRoom" > 가치 놀자고 연락하고 싶어 </button>
       <button @click="$router.push('/room/')" class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" > 신청이 완료된 핫한 방입니다. 목록으로 돌아가기 {{room.maxMemberNum}},  {{room.joinedMemberCount}}</button>
-      <button @click="$router.push('/room/')" class="btn btn-primary" v-else  > 목록으로 돌아가기 {{room.maxMemberNum}},  {{room.joinedMemberCount}} </button>
     </div>
+    <button @click="$router.push('/room/')" class="btn btn-primary"> 목록으로 돌아가기 </button>
     </div>
 </template>
 
@@ -72,6 +72,7 @@ import Vue from 'vue'
 import axios from 'axios'
 import NaviBar from './NaviBar'
 import LoginVue from './Login.vue'
+
 
 export default {
   name: 'RoomDetail',
@@ -98,7 +99,7 @@ export default {
         myRoomRequesterList: [],
         requestMemberId: '',
         arenaImage: require('../assets/login/arena.jpg'),
-        kakaoImage: require('../assets/login/kr/kakao_account_login_btn_large_wide.png'),
+        kakaoImage: '',
         defaultImage: require('../assets/login/logo.png')
       }
     }
@@ -116,16 +117,15 @@ export default {
           this.room.place = room.place
           this.room.maxMemberNum = room.maxMemberNum
           this.room.region = room.region
-          this.room.regDate = room.regDate
+          this.room.regDate = Vue.prototype.moment(room.regDate).format('YY 년 MM 월 DD 일 hh시 mm분 a')
+          this.room.registDate = Vue.prototype.moment(room.registDate).format('YYYY-MM-DD')
           this.room.ageMin = room.ageMin
           this.room.ageMax = room.ageMax
           this.room.gender = room.gender
           this.room.price = room.price
           this.room.openUrl = room.openUrl
           this.room.intro = room.intro
-          this.room.registDate = room.registDate
-
-
+          
           // added 190220
           this.$store.state.roomId = this.room.roomId
         } else {
@@ -145,14 +145,46 @@ export default {
       this.$router.push('/member/' + this.room.requestMemberId)
     },
     applyRoom() {
-      const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/'
-      //TODO change to Kakao Session id (my Id)
-      this.room.requestMemberId = this.$store.state.memberId
-      this.room.roomId = this.$store.state.roomId
-
-      axios.post(APPLY_ROOM_REQ_URL, this.room).then(res => {
-        console.log('res : ' + res)
+      const component = this
+      const memberId = this.memberId
+      
+      const Swal = require('sweetalert2')
+      const swalWithBootstrapButtons = Swal.mixin({
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: false
       })
+      swalWithBootstrapButtons.fire({
+        title: '방 신청하기',
+        text: '이 친구랑 가치 놀고 싶어?',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '응 같이 놀기 신청할래!',
+        cancelButtonText: '아니, 다시 생각해봐야겠어',
+        reverseButtons: false
+      }).then((result) => {
+        if (result.value) { //call accept request API
+          const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/'
+          this.room.requestMemberId = this.$store.state.memberId
+          this.room.roomId = this.$store.state.roomId
+
+
+          axios.post(APPLY_ROOM_REQ_URL, this.room).then(res => {
+            swalWithBootstrapButtons.fire(
+                  '가치놀기 신청 완료!',
+                  '이 친구랑 가치 놀기 신청되었습니다 =)',
+                  'success'
+                )
+            //component.$router.go(0)
+          })
+        } else if (result.dismiss === Swal.DismissReason.cancel) { // call reject request API
+              swalWithBootstrapButtons.fire(
+                  '가치놀기 신청 취소',
+                  '그래, 가치놀기 신청은 신중하게 해야해!',
+                  'error'
+                )
+          }
+        })
     },
     getKakaoImage(requestUrl) {
       axios.get(requestUrl).then((res) => {

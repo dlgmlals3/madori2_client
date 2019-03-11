@@ -19,6 +19,9 @@
             <button type="button" class="btn btn-primary" @click="setMemberId">Set MemberId</button>
           </li>
           <li>
+            현재 memberId : {{memberIdText}}
+          </li>
+          <li>
             <router-link :to="'/applyRoom/' + storedMemberId">내가 신청한 방보기 내 member 정보로</router-link>
           </li>
         </ul>
@@ -42,25 +45,21 @@ export default {
   data () {
     return {
         keyword: '',
-        naviMemberId: '',
+        naviMemberId: '', // for test
+        memberIdText: '',  // get memberId text for test
         storedMemberId: ''
       }
     },
   created() {
     this.storedMemberId = this.$store.state.memberId
+    this.getMemberId()
   },
   methods: {
     setMemberId () {
       this.$store.state.memberId = this.naviMemberId
-      /*const MY_ROOM_ID_REQEUST = Vue.prototype.$serverIp + '/room/' + this.naviMemberId
-      console.log('MY_ROOM_ID_REQEUST : ' + MY_ROOM_ID_REQEUST)
-      console.log('this naviMemberId : ' + this.naviMemberId)
-      axios.get(MY_ROOM_ID_REQEUST).then((res) => {
-        console.log('roomId : ' + res.data.resultItems._id)
-        this.$store.state.roomId = res.data.resultItems._id
-        console.log('store memberId : ' + this.$store.state.memberId)
-        console.log('store roomId : ' + this.$store.state.roomId)
-      });*/
+    },
+    getMemberId () {
+      this.memberIdText = this.$store.state.memberId
     }
   }
 }

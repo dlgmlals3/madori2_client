@@ -32,8 +32,7 @@
       <div class="col-sm-8" style="background-color:lavenderblush;">{{member.requestStatus}}</div>
     </div>
     <div>
-      <button @click="callAcceptModal" class="btn btn-primary" > 이 친구랑 가치놀기 </button>
-      <button @click="rejectApplicant" class="btn btn-primary" > 솔직히 너랑 놀기 싫어 </button>
+      <button @click="callAcceptModal" class="btn btn-primary" > 가치놀기 또는 거부하기 </button>
       <button @click="$router.go(-1)" class="btn btn-primary"  > 뒤로 가기 </button>
     </div>
   </div>
@@ -81,58 +80,38 @@ export default {
         cancelButtonText: '미안하지만 너랑 놀기 좀 그래!',
         reverseButtons: false
       }).then((result) => {
-        if (result.value) { // call accept request API
+        if (result.value) { //call accept request API
           const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/status'
-          //TODO change to Kakao Session id (my Id)
-          this.member.roomId = this.$store.state.roomId
-          this.member.requestMemberId = this.requestMemberId
-          this.member.requestStatus = '20' // apply
-
-          console.log('this.room.roomId : ' + this.member.roomId)
-          console.log('this.room.requestMemberId : ' + this.member.requestMemberId)
-          console.log('this.room.requestStatus : ' + this.member.requestStatus)
+          this.member.roomId = this.$store.state.roomId// apply room id
+          this.member.requestMemberId = this.requestMemberId//  request member id
+          this.member.requestStatus = '20'//  apply code
 
           axios.put(APPLY_ROOM_REQ_URL, this.member).then(res => {
                 swalWithBootstrapButtons.fire(
-                  '친구신청 승인!',
-                  '친구 신청이 승인되었습니다 =)',
+                  '가치놀기 승인!',
+                  '가치놀기 신청이 승인되었습니다 =)',
                   'success'
                 )
           })
-        } else if (
-          // Read more about handling dismissals
-          result.dismiss === Swal.DismissReason.cancel
-        ) { // call reject request API
-          console.log('rejectApplicant')
-          const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/status'
-          console.log('APPLY_ROOM_REQ_URL : ' + APPLY_ROOM_REQ_URL)
-          //TODO change to Kakao Session id (my Id)
-          this.member.roomId = this.$store.state.roomId
-          this.member.requestMemberId = this.requestMemberId
-          this.member.requestStatus = '30' // reject
+        } else if (result.dismiss === Swal.DismissReason.cancel) { // call reject request API
+            const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/status'
+            this.member.roomId = this.$store.state.roomId// apply room id
+            this.member.requestMemberId = this.requestMemberId//  request member id
+            this.member.requestStatus = '30'// apply code
 
-          
-
-          axios.put(APPLY_ROOM_REQ_URL, this.member).then(res => {
-            swalWithBootstrapButtons.fire(
-                '친구신청 거절!',
-                '친구 신청이 거절되었습니다 ㅠ.ㅠ',
-                'error'
-              )
-          })
-        }
-      })
-      },
-    acceptApplicant() {
-      
-    },
-    rejectApplicant() {
-      
-    }
+            axios.put(APPLY_ROOM_REQ_URL, this.member).then(res => {
+              swalWithBootstrapButtons.fire(
+                  '가치놀기 거절!',
+                  '가치놀기 신청이 거절되었습니다 ㅠ.ㅠ',
+                  'error'
+                )
+            })
+          }
+        })
+      }
   },
   created () {
     const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/member/' + this.requestMemberId
-    console.log('ROOM_DETAIL_REQUEST : ' + ROOM_DETAIL_REQUEST)
     axios.get(ROOM_DETAIL_REQUEST).then((res) => {
       this.member = res.data.resultItems
       this.member.requestStatus = '승인. 이부분 어떻게 처리할지 고민해야 함'

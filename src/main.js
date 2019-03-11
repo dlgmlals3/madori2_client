@@ -7,6 +7,7 @@ import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { store } from './store'
 import VModal from 'vue-js-modal'
+import moment from 'moment'
 
 Vue.config.productionTip = false
 
@@ -20,6 +21,7 @@ Vue.use(
         )
 Vue.prototype.$serverIp = 'http://218.38.52.30:3000'
 Vue.prototype.$accountName = 'madori'
+Vue.prototype.moment = moment
 
 new Vue({
   components: { App },

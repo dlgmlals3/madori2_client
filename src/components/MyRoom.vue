@@ -204,9 +204,12 @@ export default {
     },
     deleteMyRoom() {
       const memberId = this.$store.state.memberId
+      
       const URI = Vue.prototype.$serverIp + '/room/' + memberId
+      console.log('memberId : ' + memberId)
+      console.log('URI : ' + URI)
 
-      axios.delete(URI + this.myRoom.memberId).then((res) => {
+      axios.delete(URI).then((res) => {
         
       })
     }

@@ -63,14 +63,14 @@
       </div>
       <ul class="list-group list-group-flush" v-if="myRoom.myRoomRequesterList.length > 0">
         <li class="list-group-item" v-for="requester of myRoom.myRoomRequesterList" :key="requester.memberId._id"
-          @click="$router.push('/member/' + requester.memberId._id)">
+          @click="getRequestMemberInfo(requester.memberId._id, requester.requestStatus)">
           카카오아이디 : {{requester.memberId.kakaoId}}, 닉네임 : {{requester.memberId.nickName}} 신청상태 : {{requester.requestStatus}}
         </li>
       </ul>
           <button type="button" class="btn btn-primary" @click="createMyRoom">방 만들기</button>
           <button type="button" class="btn btn-primary"  @click="editMyRoom" >방 수정하기 editMyRoom</button>
           <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
-          <button type="button" class="btn btn-primary" @click="$router.push('/room/')"> 방 목록 보기 </button>
+          <!-- <button type="button" class="btn btn-primary" @click="$router.push('/room/')"> 방 목록 보기 </button> -->
     </form>
   </div>
 </template>
@@ -166,7 +166,6 @@ export default {
       this.isEditable = true
       const memberId = this.$store.state.memberId
       
-      
       const GET_MY_ROOM_INFO_URI = Vue.prototype.$serverIp + '/room/' + memberId
 
       axios.get(GET_MY_ROOM_INFO_URI).then((res) => {
@@ -184,15 +183,57 @@ export default {
       })
     },
     createMyRoom() {
-      const URI = Vue.prototype.$serverIp + '/room/'
-      this.myRoom.memberId = this.$store.state.memberId
-      
-      axios.post(URI, this.myRoom).then((res) => {
-        this.$store.state.roomId = res.data.roomId
-        
-        this.$router.push('/myRoom')
-        //this.$store.state.isExist = true
+      const component = this
+
+      const Swal = require('sweetalert2')
+      const swalWithBootstrapButtons = Swal.mixin({
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: false
       })
+      swalWithBootstrapButtons.fire({
+        title: '방 만들기',
+        text: '방을 만드시겠습니까?',
+        type: 'question',
+        showCancelButton: true,
+        confirmButtonText: '응 방을 만들래!',
+        cancelButtonText: '아니, 다시 생각해봐야겠어!',
+        reverseButtons: false
+      }).then((result) => {
+        if (result.value) { //call accept request API
+          const CREATE_MY_ROOM_URI = Vue.prototype.$serverIp + '/room/'
+          this.myRoom.memberId = this.$store.state.memberId
+
+          axios.post(CREATE_MY_ROOM_URI).then((res) => {
+            if (res.data.statusCode === '200') {
+              swalWithBootstrapButtons.fire({
+                position: 'center',
+                type: 'success',
+                title: '방 만들기가 완료되었습니다!',
+                showConfirmButton: false,
+                timer: 1500
+              })
+            } else {
+              swalWithBootstrapButtons.fire({
+                position: 'center',
+                type: 'success',
+                title: '방 만들기가 실패했습니다! 서버 에러라 관리자 확인이 필요합니다 ㅠ.ㅠ',
+                showConfirmButton: false,
+                timer: 1500
+              })
+              component.$router.go(0)
+            }
+          })
+        } else if (result.dismiss === Swal.DismissReason.cancel) { // call reject request API
+           swalWithBootstrapButtons.fire({
+              position: 'center',
+              type: 'error',
+              title: '방 만들기를 취소했습니다!',
+              showConfirmButton: false,
+              timer: 1500
+            })
+          }
+        })
     },
     editMyRoom() {
       const memberId = this.$store.state.memberId
@@ -203,15 +244,60 @@ export default {
       })
     },
     deleteMyRoom() {
+      const component = this
       const memberId = this.$store.state.memberId
       
-      const URI = Vue.prototype.$serverIp + '/room/' + memberId
-      console.log('memberId : ' + memberId)
-      console.log('URI : ' + URI)
-
-      axios.delete(URI).then((res) => {
-        
+      const Swal = require('sweetalert2')
+      const swalWithBootstrapButtons = Swal.mixin({
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: false
       })
+      swalWithBootstrapButtons.fire({
+        title: '내가 만든 방 삭제하기',
+        text: '방을 삭제하시겠습니까?',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '응 삭제할래!',
+        cancelButtonText: '아니, 다시 생각해봐야겠어!',
+        reverseButtons: false
+      }).then((result) => {
+        if (result.value) { //call accept request API
+          const memberId = this.$store.state.memberId
+      
+          const DELETE_MY_ROOM_URI = Vue.prototype.$serverIp + '/room/' + memberId
+
+          axios.delete(DELETE_MY_ROOM_URI).then((res) => {
+            swalWithBootstrapButtons.fire(
+                  '방 삭제 완료!',
+                  '방이 삭제되었습니다 =)',
+                  'success'
+                )
+          })
+        } else if (result.dismiss === Swal.DismissReason.cancel) { // call reject request API
+           swalWithBootstrapButtons.fire(
+                  '방 삭제 취소!',
+                  '방 삭제 취소되었습니다!',
+                  'error'
+                )
+          }
+        })
+    },
+    refreshPage () {
+      this.$router.go(0)
+    },
+    getRequestMemberInfo (memberId, requestStatus) {
+      /*console.log('getRequestMemberInfo...')
+      console.log('memberId... : ' + memberId)
+      console.log('requestStatus... : ' + requestStatus)
+      console.log('before this.$store.state.requestStatus... : ' + this.$store.state.requestStatus)
+      console.log('before this.$store.state.isMyRoomRequestMember... : ' + this.$store.state.isMyRoomRequestMember)
+      console.log('after this.$store.state.requestStatus... : ' + this.$store.state.requestStatus)
+      console.log('after this.$store.state.isMyRoomRequestMember... : ' + this.$store.state.isMyRoomRequestMember)*/
+
+      this.$store.state.requestStatus = requestStatus
+      this.$store.state.isMyRoomRequestMember = true
+      this.$router.push('/member/' + memberId)
     }
   },
   components: {

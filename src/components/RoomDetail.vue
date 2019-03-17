@@ -52,7 +52,7 @@
     </div>
     <ul class="list-group list-group-flush">
         <li class="list-group-item"  v-for="requester of room.myRoomRequesterList" :key="requester.memberId._id"
-        @click="$router.push('/member/' + requester.memberId._id)">
+        @click="getRequestMemberInfo(requester.memberId._id, requester.requestStatus)">
           카카오아이디 : {{requester.memberId.kakaoId}}, 닉네임 : {{requester.memberId.nickName}}, 신청상태 : {{requester.requestStatus}}
         </li>
     </ul>
@@ -170,26 +170,47 @@ export default {
 
 
           axios.post(APPLY_ROOM_REQ_URL, this.room).then(res => {
-            swalWithBootstrapButtons.fire(
-                  '가치놀기 신청 완료!',
-                  '이 친구랑 가치 놀기 신청되었습니다 =)',
-                  'success'
-                )
+            swalWithBootstrapButtons.fire({
+              position: 'center',
+              type: 'success',
+              title: '가치놀기 신청이 완료되었습니다!',
+              showConfirmButton: false,
+              timer: 1500
+            })
             //component.$router.go(0)
           })
         } else if (result.dismiss === Swal.DismissReason.cancel) { // call reject request API
-              swalWithBootstrapButtons.fire(
-                  '가치놀기 신청 취소',
-                  '그래, 가치놀기 신청은 신중하게 해야해!',
-                  'error'
-                )
+            swalWithBootstrapButtons.fire({
+              position: 'center',
+              type: 'error',
+              title: '가치놀기 신청이 취소되었습니다!',
+              showConfirmButton: false,
+              timer: 1500
+            })
           }
         })
     },
+    getRequestMemberInfo (memberId, requestStatus) {
+      /*console.log('getRequestMemberInfo...')
+      console.log('memberId... : ' + memberId)
+      console.log('requestStatus... : ' + requestStatus)
+      console.log('before this.$store.state.requestStatus... : ' + this.$store.state.requestStatus)
+      console.log('before this.$store.state.isMyRoomRequestMember... : ' + this.$store.state.isMyRoomRequestMember)
+      console.log('after this.$store.state.requestStatus... : ' + this.$store.state.requestStatus)
+      console.log('after this.$store.state.isMyRoomRequestMember... : ' + this.$store.state.isMyRoomRequestMember)*/
+
+      this.$store.state.requestStatus = requestStatus
+      this.$store.state.isMyRoomRequestMember = false
+      this.$router.push('/member/' + memberId)
+    },
     getKakaoImage(requestUrl) {
       axios.get(requestUrl).then((res) => {
-          this.room.kakaoImage = res.data.resultItems.thumbnailImage
-          console.log('kakaoImage : ' + this.room.kakaoImage)
+          console.log('profileImage : ' + res.data.resultItems.profileImage)
+          if (res.data.resultItems.profileImage === undefined) {
+            this.room.kakaoImage = res.data.resultItems.thumbnailImage
+          } else {
+            this.room.kakaoImage = res.data.resultItems.profileImage
+          }
         })
     }
   },

@@ -2,7 +2,7 @@
   <div class="hello">
     <navi-bar></navi-bar>
     <modals-container />
-    <img :src="member.thumbnailImage" width="400" height="400"/>
+    <img :src="member.profileImage" width="400" height="400"/>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">memberID</div>
       <div class="col-sm-8" style="background-color:lavenderblush;">{{requestMemberId}}</div>
@@ -16,8 +16,8 @@
       <div class="col-sm-8" style="background-color:lavenderblush;">{{member.nickName}}</div>
     </div>
     <div class="row detailDiv">
-      <div class="col-sm-4" style="background-color:lavender;">썸네일</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{member.thumbnailImage}}</div>
+      <div class="col-sm-4" style="background-color:lavender;">프로필 이미지 해상도 높은걸로 바꿈</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{member.profileImage}}</div>
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">연령대</div>
@@ -29,10 +29,10 @@
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">request status</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{member.requestStatus}}</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{requestStatus}}</div>
     </div>
     <div>
-      <button @click="callAcceptModal" class="btn btn-primary" > 가치놀기 또는 거부하기 </button>
+      <button v-if="isMyRoomRequestMember" @click="callAcceptModal" class="btn btn-primary" > 가치놀기 또는 거부하기 </button>
       <button @click="$router.go(-1)" class="btn btn-primary"  > 뒤로 가기 </button>
     </div>
   </div>
@@ -58,9 +58,10 @@ export default {
         profileImage: '',
         thumbnailImage: '',
         ageRange: '',
-        gender: '',
-        requestStatus: ''
-      }
+        gender: ''
+      },
+      requestStatus: '',
+      isMyRoomRequestMember: false
     }
   },
   methods: {
@@ -111,14 +112,21 @@ export default {
       }
   },
   created () {
+    /*const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/member/' + this.requestMemberId
+    axios.get(ROOM_DETAIL_REQUEST).then((res) => {
+      this.member = res.data.resultItems
+    })
+    this.member.requestStatus = this.$store.state.requestStatus
+    this.isMyRoomRequestMember = this.$store.state.isMyRoomRequestMember*/
+  },
+  mounted () {
     const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/member/' + this.requestMemberId
     axios.get(ROOM_DETAIL_REQUEST).then((res) => {
       this.member = res.data.resultItems
-      this.member.requestStatus = '승인. 이부분 어떻게 처리할지 고민해야 함'
     })
-  },
-  mounted () {
-    //this.callAcceptModal() 
+    this.requestStatus = this.$store.state.requestStatus
+
+    this.isMyRoomRequestMember = this.$store.state.isMyRoomRequestMember
   },
   components: {
     'NaviBar': NaviBar

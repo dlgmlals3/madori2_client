@@ -15,6 +15,8 @@ export const store = new Vuex.Store({
       ageRange: '',
       gender: ''
     },
+    requestStatus: '',
+    isMyRoomRequestMember: false,
     isAppliedRoom: false,
     isExist: false,
     isEditable: false

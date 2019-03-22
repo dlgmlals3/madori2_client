@@ -114,7 +114,12 @@ export default {
               component.$store.state.memberId = res.data.memberId
 
               axios.get(GET_ROOM_INFO_URI + res.data.memberId).then((res) => {
-                component.$store.state.roomId = res.data.resultItems._id
+                if(res.data.total === '0' ){
+
+                } else {
+                  component.$store.state.roomId = res.data.resultItems._id
+                }
+                
               })
               router.push('/myRoom/')
             })

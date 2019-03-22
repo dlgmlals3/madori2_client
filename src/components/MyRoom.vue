@@ -204,7 +204,7 @@ export default {
           const CREATE_MY_ROOM_URI = Vue.prototype.$serverIp + '/room/'
           this.myRoom.memberId = this.$store.state.memberId
 
-          axios.post(CREATE_MY_ROOM_URI).then((res) => {
+          axios.post(CREATE_MY_ROOM_URI, this.myRoom).then((res) => {
             if (res.data.statusCode === '200') {
               swalWithBootstrapButtons.fire({
                 position: 'center',
@@ -269,7 +269,7 @@ export default {
 
           axios.delete(DELETE_MY_ROOM_URI).then((res) => {
             swalWithBootstrapButtons.fire(
-                  '방 삭제 완료!',
+                  '방 삭제 완료 !',
                   '방이 삭제되었습니다 =)',
                   'success'
                 )

@@ -213,6 +213,7 @@ export default {
                 showConfirmButton: false,
                 timer: 1500
               })
+              component.$router.push('/room')
             } else {
               swalWithBootstrapButtons.fire({
                 position: 'center',
@@ -221,7 +222,7 @@ export default {
                 showConfirmButton: false,
                 timer: 1500
               })
-              component.$router.go(0)
+              //component.$router.go(0)
             }
           })
         } else if (result.dismiss === Swal.DismissReason.cancel) { // call reject request API
@@ -232,16 +233,62 @@ export default {
               showConfirmButton: false,
               timer: 1500
             })
+            component.$router.push('/myRoom')
           }
         })
     },
     editMyRoom() {
-      const memberId = this.$store.state.memberId
-      const URI = Vue.prototype.$serverIp + '/room/' + memberId
+      const component = this
 
-      axios.put(URI, this.myRoom).then((res) => {
-        this.total = res.data.total
+      const memberId = this.$store.state.memberId
+      const EDIT_MY_ROOM_URI = Vue.prototype.$serverIp + '/room/' + memberId
+
+      const Swal = require('sweetalert2')
+      const swalWithBootstrapButtons = Swal.mixin({
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: false
       })
+
+      swalWithBootstrapButtons.fire({
+        title: '방 정보 수정하기',
+        text: '방 정보 수정하시겠습니까?',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '응 수정할래!',
+        cancelButtonText: '아니, 다시 생각해봐야겠어!',
+        reverseButtons: false
+      }).then((result) => {
+        if (result.value) { //call accept request API
+          axios.put(EDIT_MY_ROOM_URI, this.myRoom).then((res) => {
+            if (res.data.statusCode === '200') {
+              swalWithBootstrapButtons.fire({
+                position: 'center',
+                type: 'success',
+                title: '방 수정하기 성공했습니다!',
+                showConfirmButton: false,
+                timer: 1500
+              })
+              component.$router.push('/room')
+            } else {
+              swalWithBootstrapButtons.fire({
+                  position: 'center',
+                  type: 'error',
+                  title: '방 수정하기 실패했습니다!',
+                  showConfirmButton: false,
+                  timer: 1500
+              })
+              component.$router.push('/myRoom')
+            }
+          })
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+           swalWithBootstrapButtons.fire(
+                  '방 수정 취소!',
+                  '방 수정 취소되었습니다!',
+                  'error'
+                )
+          }
+        })
     },
     deleteMyRoom() {
       const component = this
@@ -268,18 +315,24 @@ export default {
           const DELETE_MY_ROOM_URI = Vue.prototype.$serverIp + '/room/' + memberId
 
           axios.delete(DELETE_MY_ROOM_URI).then((res) => {
-            swalWithBootstrapButtons.fire(
-                  '방 삭제 완료 !',
-                  '방이 삭제되었습니다 =)',
-                  'success'
-                )
+            swalWithBootstrapButtons.fire({
+                position: 'center',
+                type: 'success',
+                title: '방 삭제하기 성공했습니다!',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            component.$router.push('/room')
           })
         } else if (result.dismiss === Swal.DismissReason.cancel) { // call reject request API
-           swalWithBootstrapButtons.fire(
-                  '방 삭제 취소!',
-                  '방 삭제 취소되었습니다!',
-                  'error'
-                )
+           swalWithBootstrapButtons.fire({
+                position: 'center',
+                type: 'error',
+                title: '방 삭제하기 실패했습니다!',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            component.$router.push('/myRoom')
           }
         })
     },

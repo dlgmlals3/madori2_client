@@ -5,6 +5,7 @@ import RoomList from '@/components/RoomList'
 import RoomDetail from '@/components/RoomDetail'
 import ApplyRoomList from '@/components/ApplyRoomList'
 import MemberDetail from '@/components/MemberDetail'
+import ChatRoom from '@/components/ChatRoom'
 import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
@@ -43,6 +44,12 @@ export default new VueRouter({
       path: '/member/:requestMemberId',
       name: 'MemberDetail',
       component: MemberDetail,
+      props: true
+    },
+    {
+      path: '/chatRoom/:roomId',
+      name: 'ChatRoom',
+      component: ChatRoom,
       props: true
     },
     {

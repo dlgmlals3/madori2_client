@@ -6,22 +6,25 @@ import router from './router'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { store } from './store'
-import VModal from 'vue-js-modal'
 import moment from 'moment'
+import './plugins/socketPlugin'
+import Directives from './plugins/directives'
+import io from 'socket.io-client'
+
+const socket = io('http://218.38.52.30:3000')
+
+Vue.use(Directives)
 
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 
-Vue.use(
-          VModal, { 
-            dynamic: true,
-            dialog: true
-          }
-        )
+
+//Vue.use(Chat)
 Vue.prototype.$serverIp = 'http://218.38.52.30:3000'
 Vue.prototype.$accountName = 'madori'
 Vue.prototype.moment = moment
+Vue.prototype.$socket = socket
 
 new Vue({
   components: { App },

@@ -24,6 +24,9 @@
           <li>
             <router-link :to="'/applyRoom/' + storedMemberId">내가 신청한 방보기 내 member 정보로</router-link>
           </li>
+          <li>
+            <router-link :to="'/chatRoom/' + storedMemberId">채팅방</router-link>
+          </li>
         </ul>
       </div>
     </nav>

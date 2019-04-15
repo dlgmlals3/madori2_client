@@ -10,7 +10,7 @@
  		<font color="black"> <h3> {{ datenow }} </h3></font>
     </div>
     <div id="kakao-login-btn" v-on:click=kakaoLogin >
-       <img :src="kakaotalkPicture"/>
+       <img :src="kakaotalkPicture" width="350" height="50"/>
     </div>
   </div>
 </template>

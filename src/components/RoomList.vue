@@ -1,14 +1,6 @@
 <template>
   <div class="hello">
     <navi-bar></navi-bar>
-    <!-- <ul class="list-group list-group-flush">
-      <li class="list-group-item" v-for="room of currentRoomList" :key="room._id" @click="$router.push('/room/' + room._id)">
-        <div v-if="room.place === 'Cherokee'"> <img :src="arenaImage" width="350" height="350"/> </div>
-        <div v-else-if="room.place === 'Crown Victoria'"> <img :src="kakaoImage" width="350" height="350"/> </div>
-        <div v-else> <img :src="defaultImage" width="350" height="350"/> </div>
-        ID : {{room._id}}, title : {{room.title}}, regDate: {{room.regDate}}
-      </li>
-    </ul> -->
       <input class="form-control mr-sm-2" v-model="keyword" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" @click="searchRoomList">Search</button>
     <table class="table table-striped table-dark">
@@ -26,7 +18,8 @@
         <tr v-for="(room, index) in currentRoomList" :key="room.memberId" @click="$router.push('/room/' + room.memberId)">
           <th scope="row">{{ index + 1}}</th>
           <td>
-            <img :src="getImgUrl(room.region)" width="200" height="200"/>
+            <!-- <img :src="getImgUrl(room.region)" width="200" height="200"/> -->
+            {{room.region}}
           </td>
           <td>{{room.title}}</td>
           <td>{{room.memberId}}</td>
@@ -70,12 +63,11 @@ export default {
   },
   methods: {
     getRoomList (requestUrl) {
-      console.log('getRoomList')
       axios.get(requestUrl).then((res) => {
         const resultObj = res.data
         this.roomList = resultObj.resultItems
         this.total = resultObj.total
-        
+
         this.pageChange()
       })
     },
@@ -118,6 +110,23 @@ export default {
         imageFileName = require('../assets/login/logo.png')
       }
       return imageFileName
+    },
+    getRegionText (regionCode) {
+      let regionText = ''
+      if (regionCode === '10') { // gangnam
+        regionText = '강남'
+      } else if (regionCode === '20') { // itaewon
+        regionText = '이태원'
+      } else if (regionCode === '30') { // hongdae
+        regionText = '홍대'
+      } else if (regionCode === '40') { // konkuk
+        regionText = '건대'
+      } else if (regionCode === '50') { // daehak-ro
+        regionText = '대학로'
+      } else {
+        regionText = '기타'
+      }
+      return regionText
     }
   },
   mounted () {

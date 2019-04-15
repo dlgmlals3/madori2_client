@@ -2,60 +2,54 @@
   <div class="main">
     <navi-bar></navi-bar>
     <form>
-      <div class="form-row">
-        <div class="form-group col-md-6">
+        <div class="form-group col-xs-6">
           <label for="title">제목</label>
           <input type="text" class="form-control" :disabled='isDisabled' v-model="myRoom.title" placeholder="제목 텍스트">
         </div>
-        <div class="form-group col-md-6">
+        <div class="form-group col-xs-6">
           <label for="maxMemberNum">인원</label>
           <input type="number" class="form-control" :disabled='isDisabled' v-model="myRoom.maxMemberNum" placeholder="인원 숫자">
         </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group col-md-6">
+        <div class="form-group col-xs-6">
           <label for="ageMin">최소 나이</label>
           <input type="number" class="form-control" :disabled='isDisabled' v-model="myRoom.ageMin" placeholder="최소 나이">
         </div>
-        <div class="form-group col-md-6">
+        <div class="form-group col-xs-6">
           <label for="ageMax">최대 나이</label>
           <input type="number" class="form-control" :disabled='isDisabled' v-model="myRoom.ageMax" placeholder="최대 나이">
         </div>
-      </div>
-      <div class="form-group col-md-6">
+      <div class="form-group col-xs-6">
         <label for="date">시간</label>
         <datetime type="datetime" :disabled='isDisabled' v-model="myRoom.regDate" use12-hour></datetime>
       </div>
-      <div class="form-row">
-        <div class="form-group col-md-6">
+      <div class="form-group col-xs-6">
+        <label for="region">지역</label>
+        <select v-model="myRoom.region" :disabled='isDisabled' class="form-control">
+          <option value="0" selected>전체</option>
+          <option value="10">강남</option>
+          <option value="20">이태원</option>
+          <option value="30">홍대</option>
+          <option value="40">건대</option>
+          <option value="50">대학로</option>
+        </select>
+      </div>
+      <div class="form-group col-xs-6">
+        <div class="form-group col-xs-6">
           <label for="price">가격</label>
           <input type="number" class="form-control" :disabled='isDisabled' v-model="myRoom.price" placeholder="가격">
         </div>
-        <div class="form-group col-md-6">
-          <label for="gender">성별</label>
-          <select v-model="myRoom.gender" :disabled='isDisabled' class="form-control">
-            <option value="0" selected>전체</option>
-            <option value="10">남성</option>
-            <option value="20">여성</option>
-          </select>
-        </div>
       </div>
-      <div class="form-row">
-        <div class="form-group col-md-6">
-          <label for="region">지역</label>
-          <select v-model="myRoom.region" :disabled='isDisabled' class="form-control">
-            <option value="0" selected>전체</option>
-            <option value="10">강남</option>
-            <option value="20">이태원</option>
-            <option value="30">홍대</option>
-            <option value="40">건대</option>
-            <option value="50">대학로</option>
-          </select>
-        </div>
-        <div class="form-group col-md-6">
-          <label for="openUrl">오픈채팅 URL</label>
-          <input type="text" class="form-control" :disabled='isDisabled' v-model="myRoom.openUrl" placeholder="오픈채팅 텍스트">
-        </div>
+      <div class="form-group col-xs-6">
+        <label for="gender">성별</label>
+        <select v-model="myRoom.gender" :disabled='isDisabled' class="form-control">
+          <option value="0" selected>전체</option>
+          <option value="10">남성</option>
+          <option value="20">여성</option>
+        </select>
+      </div>
+      <div class="form-group col-xs-6">
+        <label for="openUrl">오픈채팅 URL</label>
+        <input type="text" class="form-control" :disabled='isDisabled' v-model="myRoom.openUrl" placeholder="오픈채팅 텍스트">
       </div>
       <div class="form-group">
         <label for="intro">소개</label>
@@ -67,10 +61,9 @@
           카카오아이디 : {{requester.memberId.kakaoId}}, 닉네임 : {{requester.memberId.nickName}} 신청상태 : {{requester.requestStatus}}
         </li>
       </ul>
-          <button type="button" class="btn btn-primary" @click="createMyRoom">방 만들기</button>
-          <button type="button" class="btn btn-primary"  @click="editMyRoom" >방 수정하기 editMyRoom</button>
-          <button type="button" class="btn btn-primary" @click="deleteMyRoom" >방 삭제하기</button>
-          <!-- <button type="button" class="btn btn-primary" @click="$router.push('/room/')"> 방 목록 보기 </button> -->
+          <button type="button" class="btn btn-primary" :disabled="isExist" @click="createMyRoom">방 만들기</button>
+          <button type="button" class="btn btn-primary" :disabled="!isExist" @click="editMyRoom" >방 수정하기</button>
+          <button type="button" class="btn btn-primary" :disabled="isExist" @click="deleteMyRoom" >방 삭제하기</button>
     </form>
   </div>
 </template>
@@ -138,6 +131,8 @@ export default {
 
         if (total > 0 && statusCode === '200' && resultObj !== undefined) {
           console.log('is total > 0 && statusCode === 200 && resultObj !== undefined ')
+          this.isExist = true
+          
           //this.$store.state.isEditable = true
           //this.$store.state.isExist = true
           this.total = res.data.total

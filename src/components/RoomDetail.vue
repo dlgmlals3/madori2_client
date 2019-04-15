@@ -48,7 +48,7 @@
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">최대인원</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.maxMemberNum}} 명</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.myRoomRequesterList.length}} / {{room.maxMemberNum}}  명</div>
     </div>
     <ul class="list-group list-group-flush">
         <li class="list-group-item"  v-for="requester of room.myRoomRequesterList" :key="requester.memberId._id"
@@ -56,13 +56,7 @@
           카카오아이디 : {{requester.memberId.kakaoId}}, 닉네임 : {{requester.memberId.nickName}}, 신청상태 : {{requester.requestStatus}}
         </li>
     </ul>
-    <div v-if="isAppliedRoom === true">  <!-- hide button -->
-
-    </div>
-    <div v-else>
-      <button class="btn btn-primary" v-if="true" @click="applyRoom" > 가치 놀자고 연락하고 싶어 </button>
-      <button @click="$router.push('/room/')" class="btn btn-primary" v-if="room.maxMemberNum > room.joinedMemberCount" > 신청이 완료된 핫한 방입니다. 목록으로 돌아가기 {{room.maxMemberNum}},  {{room.joinedMemberCount}}</button>
-    </div>
+    <button class="btn btn-primary" :disabled="isDisabled" @click="applyRoom" > 가치 놀자고 연락하고 싶어 </button>
     <button @click="$router.push('/room/')" class="btn btn-primary"> 목록으로 돌아가기 </button>
     </div>
 </template>
@@ -81,11 +75,13 @@ export default {
   },
   data () {
     return {
-      isAppliedRoom: false,
+      //isAppliedRoom: false,
+      isDisabled: false,
+      total: 0,
       room: {
         roomId: '',
         title: '',
-        maxMemberNum: '4',
+        maxMemberNum: '',
         joinedMemberCount: 0,
         date: '',
         price: '',
@@ -106,6 +102,8 @@ export default {
   },
   methods: {
     getRoomDetail (requestUrl) {
+      const component = this
+
       axios.get(requestUrl).then((res) => {
         const resultObj = res.data
 
@@ -135,7 +133,26 @@ export default {
         const MY_ROOM_REQUESTER_LIST = Vue.prototype.$serverIp + '/room/applyRoom/' + this.room.roomId
       
         axios.get(MY_ROOM_REQUESTER_LIST).then((res) => {
-          this.room.myRoomRequesterList = res.data.resultItems
+          const resultObj = res.data
+
+          if (resultObj.statusCode === '200') {
+            let myMemberId = this.$store.state.memberId
+            let roomMemberId = this.memberId
+            let myRoomRequesterListSize = resultObj.total
+
+            this.room.myRoomRequesterList = resultObj.resultItems
+            //this.total = resultObj.total
+            this.room.myRoomRequesterList.forEach(function(requester, index, arr) {
+              let requestMemberId = requester.memberId._id
+              if (requestMemberId === myMemberId) {
+                component.isDisabled = true
+              }
+            })
+            this.isDisabled = this.isDisabled ||
+              this.isOverMaxMemberCount(myRoomRequesterListSize, this.room.maxMemberNum) ||
+              this.isMyRoom(myMemberId, roomMemberId) ||
+              this.isOverMaxApplyCount(this.$store.state.maxApplyCount)
+          }
         })
       })
     },
@@ -168,7 +185,6 @@ export default {
           this.room.requestMemberId = this.$store.state.memberId
           this.room.roomId = this.$store.state.roomId
 
-
           axios.post(APPLY_ROOM_REQ_URL, this.room).then(res => {
             swalWithBootstrapButtons.fire({
               position: 'center',
@@ -177,7 +193,7 @@ export default {
               showConfirmButton: false,
               timer: 1500
             })
-            //component.$router.go(0)
+            component.$router.push('/room')
           })
         } else if (result.dismiss === Swal.DismissReason.cancel) { // call reject request API
             swalWithBootstrapButtons.fire({
@@ -191,30 +207,53 @@ export default {
         })
     },
     getRequestMemberInfo (memberId, requestStatus) {
-      /*console.log('getRequestMemberInfo...')
-      console.log('memberId... : ' + memberId)
-      console.log('requestStatus... : ' + requestStatus)
-      console.log('before this.$store.state.requestStatus... : ' + this.$store.state.requestStatus)
-      console.log('before this.$store.state.isMyRoomRequestMember... : ' + this.$store.state.isMyRoomRequestMember)
-      console.log('after this.$store.state.requestStatus... : ' + this.$store.state.requestStatus)
-      console.log('after this.$store.state.isMyRoomRequestMember... : ' + this.$store.state.isMyRoomRequestMember)*/
-
       this.$store.state.requestStatus = requestStatus
       this.$store.state.isMyRoomRequestMember = false
       this.$router.push('/member/' + memberId)
     },
     getKakaoImage(requestUrl) {
       axios.get(requestUrl).then((res) => {
-          console.log('profileImage : ' + res.data.resultItems.profileImage)
           if (res.data.resultItems.profileImage === undefined) {
             this.room.kakaoImage = res.data.resultItems.thumbnailImage
           } else {
             this.room.kakaoImage = res.data.resultItems.profileImage
           }
         })
+    },
+    isMyRoom(myMemberId, roomMemberId) {
+      if (myMemberId === roomMemberId) {
+        return true
+      } else {
+        return false
+      }
+    },
+    isOverMaxApplyCount(maxApplyCount) {
+      const MY_REQUEST_ROOM_LIST = Vue.prototype.$serverIp + '/myRequestInfo/' + this.$store.state.memberId
+      let appliedRoomCount = 0
+
+      axios.get(MY_REQUEST_ROOM_LIST).then((res) => {
+        const resultObj = res.data
+
+        if (resultObj.statusCode === '200') {
+          appliedRoomCount = resultObj.total
+        }
+        if (maxApplyCount <= appliedRoomCount) {
+          return true
+        } else {
+          return false
+        }
+      })
+    },
+    isOverMaxMemberCount(requesterListSize, maxMemberNum) {
+      if (maxMemberNum <= requesterListSize) {
+        return true
+      } else {
+        return false
+      }
     }
   },
   mounted () {
+    let maxApplyCount = this.$store.state.maxApplyCount
     this.isAppliedRoom = this.$store.state.isAppliedRoom
     const ROOM_DETAIL_REQUEST = Vue.prototype.$serverIp + '/room/' + this.memberId
     const MEMBER_DETAIL_REQUEST = Vue.prototype.$serverIp + '/member/' + this.memberId

@@ -1,7 +1,7 @@
 <template>
   <div class="naviBar">
-    <nav class="navbar navbar-expand-sm navbar-light bg-light">
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <!-- <nav class="navbar navbar-expand-sm fixed-top navbar-light bg-light">
+       <div class="collapse navbar-collapse" id="navbarSupportedContent"> 
         <ul class="navbar-nav mr-auto">
           <li>
             <router-link to="/myRoom">방만들기 및 방 수정하기</router-link>
@@ -9,7 +9,7 @@
           <li>
             <router-link to="/room">방목록 보기</router-link>
           </li>
-          <li>
+           <li>
             <router-link :to="'/applyRoom/' + naviMemberId">내가 신청한 방보기 setMember 정보로</router-link>
           </li>
           <li>
@@ -23,12 +23,59 @@
           </li>
           <li>
             <router-link :to="'/applyRoom/' + storedMemberId">내가 신청한 방보기 내 member 정보로</router-link>
-          </li>
+          </li> 
           <li>
             <router-link :to="'/chatRoom/' + storedMemberId">채팅방</router-link>
           </li>
         </ul>
-      </div>
+      </div> 
+    </nav> -->
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="btn-group">
+  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Menu List
+  </button>
+  <div class="dropdown-menu">
+    <li>
+      <router-link to="/myRoom">방만들기 및 방 수정하기</router-link>
+    </li>
+    <li>
+      <router-link to="/room">방목록 보기</router-link>
+    </li>
+      <li>
+      <router-link :to="'/applyRoom/' + naviMemberId">내가 신청한 방보기 setMember 정보로</router-link>
+    </li>
+    <li>
+      <input type="text" class="form-control" v-model="naviMemberId">
+    </li>
+    <li>
+      <button type="button" class="btn btn-primary" @click="setMemberId">Set MemberId</button>
+    </li>
+    <li>
+      현재 memberId : {{memberIdText}}
+    </li>
+    <li>
+      현재 roomId : {{memberIdText}}
+    </li>
+    <li>
+      <router-link :to="'/applyRoom/' + storedMemberId">내가 신청한 방보기 내 member 정보로</router-link>
+    </li> 
+    <li>
+      <router-link :to="'/chatRoom/'">채팅방</router-link>
+    </li>
+  </div>
+</div>
+<div class="btn-group">
+  <button class="btn btn-secondary btn-sm" type="button">
+    Setting
+  </button>
+  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <div class="dropdown-menu">
+    ...
+  </div>
+</div>
     </nav>
   </div>
 </template>
@@ -50,11 +97,13 @@ export default {
         keyword: '',
         naviMemberId: '', // for test
         memberIdText: '',  // get memberId text for test
-        storedMemberId: ''
+        storedMemberId: '',
+        roomId: '',
       }
     },
   created() {
     this.storedMemberId = this.$store.state.memberId
+    this.roomId = this.$store.state.roomId
     this.getMemberId()
   },
   methods: {

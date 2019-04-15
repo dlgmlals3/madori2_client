@@ -7,12 +7,13 @@
     <div>
       <input type="text" @keyup.enter="sendMessage()" v-model="chatBox">
     </div>
+    <button type="button" class="btn btn-primary" @click="saveChatting()">채팅 내용 저장하기</button>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
 import { mapMutations, mapState } from 'vuex'
-import Constant from '@/Constant'
 
 export default {
   name: 'ChatRoom',
@@ -98,17 +99,25 @@ export default {
     },
     writeMessage(type, name, message) {
       console.log('this.chatBox : ' + this.chatBox)
+      
+
       let printName = ''
       if (type === 'system') {
         // do nothing
       } else {
         printName = name + ' : '
       }
-
       
       this.messages.push({
         msg : printName + message
       })
+      console.log('this.messages : ' + JSON.stringify(this.messages))
+    },
+    saveChatting() {
+      let arr
+      this.$localStorage.set('messages', JSON.stringify(this.messages))
+      arr = this.$localStorage.get('messages')
+      console.log('this.arr : ' + JSON.stringify(arr))
     }
   }
 }

@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import socket from './store/modules/socket'
 
 
-
 Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'
@@ -12,10 +11,12 @@ export const store = new Vuex.Store({
   modules: {
     socket
   },
-  strict: debug,
+  strict: false,
   state: {
     roomId: '',
     memberId: '',
+    appliedRoomList: [],
+    maxApplyCount: 3,
     member: {
       kakaoId: '',
       nickName: '',
@@ -24,6 +25,7 @@ export const store = new Vuex.Store({
       ageRange: '',
       gender: ''
     },
+    
     requestStatus: '',
     isMyRoomRequestMember: false,
     isAppliedRoom: false,

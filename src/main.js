@@ -10,12 +10,17 @@ import moment from 'moment'
 import './plugins/socketPlugin'
 import Directives from './plugins/directives'
 import io from 'socket.io-client'
+import VueLocalStorage from 'vue-localstorage'
+ 
 
 const socket = io('http://218.38.52.30:3000')
 
 Vue.use(Directives)
 
 Vue.config.productionTip = false
+
+Vue.use(VueLocalStorage)
+
 
 /* eslint-disable no-new */
 

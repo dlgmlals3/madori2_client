@@ -66,6 +66,7 @@ export default {
   },
   methods: {
     callAcceptModal() {
+      const component = this
       const Swal = require('sweetalert2')
       const swalWithBootstrapButtons = Swal.mixin({
         confirmButtonClass: 'btn btn-success',
@@ -93,6 +94,7 @@ export default {
                   '가치놀기 신청이 승인되었습니다 =)',
                   'success'
                 )
+                component.$router.push('/room') 
           })
         } else if (result.dismiss === Swal.DismissReason.cancel) { // call reject request API
             const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/status'
@@ -107,6 +109,7 @@ export default {
                   'error'
                 )
             })
+            component.$router.push('/room')
           }
         })
       }

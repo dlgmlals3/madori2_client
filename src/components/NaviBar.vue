@@ -66,14 +66,12 @@
   </div>
 </div>
 <div class="btn-group">
-  <button class="btn btn-secondary btn-sm" type="button">
+  <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     Setting
   </button>
-  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="sr-only">Toggle Dropdown</span>
-  </button>
   <div class="dropdown-menu">
-    ...
+      <router-link class="dropdown-item" :to="'/'">Login</router-link>
+      <a class="dropdown-item" @click="logout" href="#">Logout</a>
   </div>
 </div>
     </nav>
@@ -112,6 +110,26 @@ export default {
     },
     getMemberId () {
       this.memberIdText = this.$store.state.memberId
+    },
+    logout () {
+      const router = this.$router
+  	  /*Kakao.Auth.logout(
+        function(data) { 
+            alert('로그아웃 되었습니다.')
+            Kakao.Auth.cleanup()
+            router.push('/')
+         }
+      )*/
+      Kakao.API.request({
+          url: '/v1/user/logout',
+          success: function(res) {
+            alert("로그아웃 성공 ")
+            router.push('/')
+          },
+          fail: function(error) {
+            alert('로그아웃 실패 : ' + JSON.stringify(error))
+          }
+	      });
     }
   }
 }

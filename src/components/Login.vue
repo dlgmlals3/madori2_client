@@ -73,15 +73,14 @@ export default {
       //this.datenow = moment().format()
       setInterval(self.time, 1000)
     },
-   
     kakaoLogin() {
-  	  Kakao.init(this.apiKey);
-  	  Kakao.Auth.login({
+  	  Kakao.Auth.loginForm({
     	success: (authObj) => this.onSuccess(authObj),
       fail: (err) => this.onFailure(err),
       });
     },
     onSuccess(authObj) {
+        console.log('authObj : ' + JSON.stringify(authObj))
         const router = this.$router
         const member = this.member
         const component = this
@@ -129,7 +128,6 @@ export default {
             console.log('FAIL : ' + JSON.stringify(error))
           }
 	      });
-
     },
     removeNullMemberInfo(member){
       if(member.nickName === undefined ){
@@ -152,7 +150,7 @@ export default {
 
     },
     onFailure(err) {
-      console.log("onFailure")
+      console.log("onFailure. err : " + err)
     },
     sendToServer() {
       console.log("sendDataToServer")
@@ -161,6 +159,9 @@ export default {
   },
   created () {
   	this.startClock()
+  },
+  mounted () {
+    Kakao.init(this.apiKey);
   },
   components: {}
 }

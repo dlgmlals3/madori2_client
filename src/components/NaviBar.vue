@@ -59,9 +59,9 @@
     </li>
     <li>
       <router-link :to="'/applyRoom/' + storedMemberId">내가 신청한 방보기 내 member 정보로</router-link>
-    </li> 
+    </li>
     <li>
-      <router-link :to="'/chatRoom/'">채팅방</router-link>
+      <router-link :to="'/chatRoomList/'">채팅방</router-link>
     </li>
   </div>
 </div>

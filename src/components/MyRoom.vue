@@ -108,9 +108,9 @@ export default {
   watch:{
   },
   mounted () {
-      let memberId = this.$store.state.memberId
-      this.getMyRoomInfo(memberId)
-      this.getRequesterList(memberId)
+    let memberId = this.$store.state.memberId
+    this.getMyRoomInfo(memberId)
+    this.getRequesterList(memberId)
   },
   updated() {
     
@@ -179,8 +179,9 @@ export default {
     },
     createMyRoom() {
       const component = this
-
+      const socket = this.$socket
       const Swal = require('sweetalert2')
+
       const swalWithBootstrapButtons = Swal.mixin({
         confirmButtonClass: 'btn btn-success',
         cancelButtonClass: 'btn btn-danger',
@@ -201,6 +202,11 @@ export default {
 
           axios.post(CREATE_MY_ROOM_URI, this.myRoom).then((res) => {
             if (res.data.statusCode === '200') {
+              socket.emit('JOIN_ROOM', (data) => {
+                //this.messages = data
+                console.log('on JOIN_ROOM data : ' + JSON.stringify(data))
+                //component.writeMessage('broadcast', data.name, data.message)
+              })
               swalWithBootstrapButtons.fire({
                 position: 'center',
                 type: 'success',
@@ -310,20 +316,26 @@ export default {
           const DELETE_MY_ROOM_URI = Vue.prototype.$serverIp + '/room/' + memberId
 
           axios.delete(DELETE_MY_ROOM_URI).then((res) => {
-            swalWithBootstrapButtons.fire({
-                position: 'center',
-                type: 'success',
-                title: '방 삭제하기 성공했습니다!',
-                showConfirmButton: false,
-                timer: 1500
-            })
-            component.$router.push('/room')
+            if (res.data.statusCode === '200') {
+              this.$socket.emit('LEAVE_ROOM', function(data) {
+                console.log('on SYSTEM : ' + JSON.stringify(data))
+                component.writeMessage('system', 'system', data.message)
+              })
+              swalWithBootstrapButtons.fire({
+                  position: 'center',
+                  type: 'success',
+                  title: '방 삭제하기 성공했습니다!',
+                  showConfirmButton: false,
+                  timer: 1500
+              })
+              component.$router.push('/room')
+              }
           })
         } else if (result.dismiss === Swal.DismissReason.cancel) { // call reject request API
            swalWithBootstrapButtons.fire({
                 position: 'center',
                 type: 'error',
-                title: '방 삭제하기 실패했습니다!',
+                title: '방 삭제하기 취소했습니다!',
                 showConfirmButton: false,
                 timer: 1500
             })

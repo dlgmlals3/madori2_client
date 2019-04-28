@@ -120,6 +120,7 @@ export default {
       this.$localStorage.set('messages', JSON.stringify(this.messages))
       arr = this.$localStorage.get('messages')
       console.log('this.arr : ' + JSON.stringify(arr))
+			this.sendMessage()
     }
   },
 	components: {

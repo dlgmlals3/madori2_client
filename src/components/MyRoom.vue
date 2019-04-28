@@ -63,7 +63,7 @@
       </ul>
           <button type="button" class="btn btn-primary" :disabled="isExist" @click="createMyRoom">방 만들기</button>
           <button type="button" class="btn btn-primary" :disabled="!isExist" @click="editMyRoom" >방 수정하기</button>
-          <button type="button" class="btn btn-primary" :disabled="isExist" @click="deleteMyRoom" >방 삭제하기</button>
+          <button type="button" class="btn btn-primary" :disabled="!isExist" @click="deleteMyRoom" >방 삭제하기</button>
     </form>
   </div>
 </template>
@@ -198,15 +198,19 @@ export default {
       }).then((result) => {
         if (result.value) { //call accept request API
           const CREATE_MY_ROOM_URI = Vue.prototype.$serverIp + '/room/'
-          this.myRoom.memberId = this.$store.state.memberId
 
           axios.post(CREATE_MY_ROOM_URI, this.myRoom).then((res) => {
             if (res.data.statusCode === '200') {
-              socket.emit('JOIN_ROOM', (data) => {
-                //this.messages = data
-                console.log('on JOIN_ROOM data : ' + JSON.stringify(data))
-                //component.writeMessage('broadcast', data.name, data.message)
-              })
+							let roomId = res.data.roomId
+							let nickName = this.$store.state.member.nickName
+							this.$store.state.roomId = roomId
+							
+							console.log('JOIN_ROOM emit start... roomId : ' + roomId)
+							console.log('JOIN_ROOM emit start... this.$store.state.roomId : ' + this.$store.state.roomId)
+              socket.emit('JOIN_ROOM', {
+								roomId : roomId,
+								nickName : nickName
+							})
               swalWithBootstrapButtons.fire({
                 position: 'center',
                 type: 'success',
@@ -311,16 +315,18 @@ export default {
         reverseButtons: false
       }).then((result) => {
         if (result.value) { //call accept request API
-          const memberId = this.$store.state.memberId
+					let roomId = component.$store.state.roomId 
+					let nickName = component.$store.state.member.nickName 
+					console.log('roomId : ' + roomId)
       
           const DELETE_MY_ROOM_URI = Vue.prototype.$serverIp + '/room/' + memberId
 
           axios.delete(DELETE_MY_ROOM_URI).then((res) => {
             if (res.data.statusCode === '200') {
-              this.$socket.emit('LEAVE_ROOM', function(data) {
-                console.log('on SYSTEM : ' + JSON.stringify(data))
-                component.writeMessage('system', 'system', data.message)
-              })
+              this.$socket.emit('LEAVE_ROOM', {
+								roomId : roomId,
+								nickName : nickName
+							})
               swalWithBootstrapButtons.fire({
                   position: 'center',
                   type: 'success',
@@ -328,6 +334,7 @@ export default {
                   showConfirmButton: false,
                   timer: 1500
               })
+							this.$store.state.roomId = '' 
               component.$router.push('/room')
               }
           })

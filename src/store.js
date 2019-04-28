@@ -13,6 +13,7 @@ export const store = new Vuex.Store({
   },
   strict: false,
   state: {
+		isExistMyRoom: false,
     roomId: '',
     memberId: '',
     appliedRoomList: [],
@@ -24,13 +25,7 @@ export const store = new Vuex.Store({
       thumbnailImage: '',
       ageRange: '',
       gender: ''
-    },
-    
-    requestStatus: '',
-    isMyRoomRequestMember: false,
-    isAppliedRoom: false,
-    isExist: false,
-    isEditable: false
+    }
   },
   getters: {
     getRoomId: state => {

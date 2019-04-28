@@ -1,19 +1,24 @@
 <template>
   <div>
+	<navi-bar></navi-bar>
     <h1>채팅방</h1>
-    <ul>
+    <!-- <ul>
       <li v-for="(msg, index) in messages" :key="index">{{msg.msg}}</li>
-    </ul>
+    </ul> -->
+    <tr v-for="(msg, index) in messages" :key="index">
+      <td>{{msg.msg}}</td>
+    </tr>
     <div>
       <input type="text" @keyup.enter="sendMessage()" v-model="chatBox">
     </div>
-    <button type="button" class="btn btn-primary" @click="saveChatting()">채팅 내용 저장하기</button>
+    <button type="button" class="btn btn-primary" @click="saveChatting()">전송</button>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
 import { mapMutations, mapState } from 'vuex'
+import NaviBar from './NaviBar'
 
 export default {
   name: 'ChatRoom',
@@ -25,9 +30,6 @@ export default {
       messages: [],
       chatBox: ''
     }
-  },
-  components: {
-
   },
   computed: {
 
@@ -119,7 +121,10 @@ export default {
       arr = this.$localStorage.get('messages')
       console.log('this.arr : ' + JSON.stringify(arr))
     }
-  }
+  },
+	components: {
+		'NaviBar' : NaviBar
+	}
 }
 </script>
 

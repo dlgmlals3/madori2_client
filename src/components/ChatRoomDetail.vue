@@ -34,28 +34,33 @@ export default {
   computed: {
 
   },
-  mounted() {
-    const socket = this.$socket
-    const component = this
-    let roomId = this.roomId
-    /*this.$socket.on('CONNECT', function(data) { 
-      console.log('CONNECT on... type : ' + data.type)
-      console.log('this.roomId : ' + roomId)
+		mounted() {
+			const socket = this.$socket
+			const component = this
+			let roomId = this.roomId
+			let nickName = this.$store.state.member.nickName
+			/*this.$socket.on('CONNECT', function(data) { 
+				console.log('CONNECT on... type : ' + data.type)
+				console.log('this.roomId : ' + roomId)
 
-      if (data.type === 'connected') { 
-        socket.emit('CONNECT'
-            , { 
-                type : 'join',
+				if (data.type === 'connected') { 
+					socket.emit('CONNECT'
+							, { 
+									type : 'join',
                 name : roomId,
                 room : '100'
               }
         )
       }
     })*/
+    this.$socket.emit('JOIN_ROOM', {
+		    roomId : this.roomId,
+				nickName : nickName
+		})
     this.$socket.on('BROADCAST_MESSAGE', (data) => {
         //this.messages = data
         console.log('on BROADCAST_MESSAGE : ' + JSON.stringify(data))
-        component.writeMessage('broadcast', data.name, data.message)
+        component.writeMessage('broadcast', data.nickName, data.message)
     })
     this.$socket.on('SYSTEM', function(data) {
       console.log('on SYSTEM : ' + JSON.stringify(data))
@@ -90,18 +95,20 @@ export default {
       const socket = this.$socket
       let msg = this.chatBox
       let roomId = this.roomId
+			let nickName = this.$store.state.member.nickName
+			console.log('roomId : ' + roomId)
+			console.log('nickName : ' + nickName)
       console.log('emit SEND_MESSAGE, this.chatBox : ' + JSON.stringify(this.chatBox))
       socket.emit('SEND_MESSAGE', {
-          name : roomId,
-          message : msg,
-          room : '100'//테스트용 고정
+          nickName : nickName,
+					roomId : roomId,
+          message : msg
         })
       this.chatBox = ''
       this.writeMessage('me', '나', msg)
     },
     writeMessage(type, name, message) {
       console.log('this.chatBox : ' + this.chatBox)
-      
 
       let printName = ''
       if (type === 'system') {

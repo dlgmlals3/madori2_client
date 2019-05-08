@@ -2,14 +2,11 @@
   <div>
 	<navi-bar></navi-bar>
     <h1>채팅방</h1>
-    <!-- <ul>
-      <li v-for="(msg, index) in messages" :key="index">{{msg.msg}}</li>
-    </ul> -->
     <tr v-for="(msg, index) in messages" :key="index">
       <td>{{msg.msg}}</td>
     </tr>
     <div>
-      <input type="text" @keyup.enter="sendMessage()" v-model="chatBox">
+      <input type="text" @keyup.enter="saveChatting()" v-model="chatBox">
     </div>
     <button type="button" class="btn btn-primary" @click="saveChatting()">전송</button>
   </div>
@@ -31,64 +28,36 @@ export default {
       chatBox: ''
     }
   },
-  computed: {
+	mounted() {
+		const socket = this.$socket
+		const component = this
+		let roomId = this.roomId
+		let nickName = this.$store.state.member.nickName
+		const memberId = this.$store.state.memberId
+		const roomKey = 'chatRoom_' + this.roomId
+		const chatRoomObj = this.$store.state.chatRooms
+		// for undefined exception. if there are no messages yet, messages array initialized by []
+		this.messages = chatRoomObj[roomKey]
+		if (this.messages === undefined) {
+			this.messages = []
+		}
 
-  },
-		mounted() {
+		this.$socket.on('BROADCAST_MESSAGE', (data) => {
+			//this.messages = data
+			component.writeMessage('broadcast', data.nickName, data.message)
+		})
+		},
+		created() {
 			const socket = this.$socket
 			const component = this
 			let roomId = this.roomId
 			let nickName = this.$store.state.member.nickName
-			/*this.$socket.on('CONNECT', function(data) { 
-				console.log('CONNECT on... type : ' + data.type)
-				console.log('this.roomId : ' + roomId)
 
-				if (data.type === 'connected') { 
-					socket.emit('CONNECT'
-							, { 
-									type : 'join',
-                name : roomId,
-                room : '100'
-              }
-        )
-      }
-    })*/
-    this.$socket.emit('JOIN_ROOM', {
-		    roomId : this.roomId,
+			this.$socket.emit('JOIN_ROOM', {
+				roomId : this.roomId,
 				nickName : nickName
-		})
-    this.$socket.on('BROADCAST_MESSAGE', (data) => {
-        //this.messages = data
-        console.log('on BROADCAST_MESSAGE : ' + JSON.stringify(data))
-        component.writeMessage('broadcast', data.nickName, data.message)
-    })
-    this.$socket.on('SYSTEM', function(data) {
-      console.log('on SYSTEM : ' + JSON.stringify(data))
-      component.writeMessage('system', 'system', data.message)
-    })
-    /*this.$socket.on('message', function(data) {
-      console.log('on BROADCAST_MESSAGE : ' + JSON.stringify(this.messages))
-      component.writeMessage('other', data.name, data.message)
-    })*/
-  },
-  created() {
-    const socket = this.$socket
-    const component = this
-    let roomId = this.roomId
-    this.$socket.on('CONNECT', function(data) { 
-      console.log('CONNECT on... type : ' + data.type)
-      console.log('this.roomId : ' + roomId)
-
-      if (data.type === 'connected') { 
-        socket.emit('CONNECT'
-            , { 
-                type : 'join',
-                name : roomId,
-                room : '100'//테스트용 고정
-              }
-        )
-      }
-    })
+			})
+			//this.messages = this.$localStorage.get('messages_' + roomId)
   },
   methods: {
     sendMessage() {
@@ -96,38 +65,33 @@ export default {
       let msg = this.chatBox
       let roomId = this.roomId
 			let nickName = this.$store.state.member.nickName
-			console.log('roomId : ' + roomId)
-			console.log('nickName : ' + nickName)
-      console.log('emit SEND_MESSAGE, this.chatBox : ' + JSON.stringify(this.chatBox))
       socket.emit('SEND_MESSAGE', {
           nickName : nickName,
 					roomId : roomId,
           message : msg
         })
-      this.chatBox = ''
       this.writeMessage('me', '나', msg)
+      this.chatBox = ''
     },
     writeMessage(type, name, message) {
-      console.log('this.chatBox : ' + this.chatBox)
-
       let printName = ''
       if (type === 'system') {
         // do nothing
       } else {
         printName = name + ' : '
       }
-      
       this.messages.push({
         msg : printName + message
       })
-      console.log('this.messages : ' + JSON.stringify(this.messages))
     },
     saveChatting() {
-      let arr
-      this.$localStorage.set('messages', JSON.stringify(this.messages))
-      arr = this.$localStorage.get('messages')
-      console.log('this.arr : ' + JSON.stringify(arr))
 			this.sendMessage()
+			const memberId = this.$store.state.memberId
+			const arr = this.messages
+			const roomKey = 'chatRoom_' + this.roomId
+			let jsonObj = {roomKey : roomKey, msg: arr}
+			this.$store.commit('setChatRooms', jsonObj)
+			//this.$localStorage.set(roomKey, arr)
     }
   },
 	components: {

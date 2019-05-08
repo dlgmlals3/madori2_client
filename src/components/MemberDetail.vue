@@ -16,7 +16,7 @@
       <div class="col-sm-8" style="background-color:lavenderblush;">{{member.nickName}}</div>
     </div>
     <div class="row detailDiv">
-      <div class="col-sm-4" style="background-color:lavender;">프로필 이미지 해상도 높은걸로 바꿈</div>
+      <div class="col-sm-4" style="background-color:lavender;">프로필 이미지</div>
       <div class="col-sm-8" style="background-color:lavenderblush;">{{member.profileImage}}</div>
     </div>
     <div class="row detailDiv">
@@ -27,12 +27,8 @@
       <div class="col-sm-4" style="background-color:lavender;">성별</div>
       <div class="col-sm-8" style="background-color:lavenderblush;">{{member.gender}}</div>
     </div>
-    <div class="row detailDiv">
-      <div class="col-sm-4" style="background-color:lavender;">request status</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{requestStatus}}</div>
-    </div>
     <div>
-      <button v-if="isMyRoomRequestMember" @click="callAcceptModal" class="btn btn-primary" > 가치놀기 또는 거부하기 </button>
+      <button v-if="isMyRoomRequestMember" @click="callAcceptModal" class="btn btn-primary" >가치 먹을지 말지 결정하기</button>
       <button @click="$router.go(-1)" class="btn btn-primary"  > 뒤로 가기 </button>
     </div>
   </div>
@@ -68,6 +64,11 @@ export default {
     callAcceptModal() {
       const component = this
       const Swal = require('sweetalert2')
+			const socket = this.$socket
+			let roomId = this.$store.state.roomId
+			let nickName = this.member.nickName
+			let msg = ''
+
       const swalWithBootstrapButtons = Swal.mixin({
         confirmButtonClass: 'btn btn-success',
         cancelButtonClass: 'btn btn-danger',
@@ -89,12 +90,12 @@ export default {
           this.member.requestStatus = '20'//  apply code
 
           axios.put(APPLY_ROOM_REQ_URL, this.member).then(res => {
-                swalWithBootstrapButtons.fire(
-                  '가치놀기 승인!',
-                  '가치놀기 신청이 승인되었습니다 =)',
-                  'success'
-                )
-                component.$router.push('/room') 
+          	swalWithBootstrapButtons.fire(							
+                '가치놀기 승인!',								
+                '가치놀기 신청이 승인되었습니다 =)',
+                'success'
+              )
+            component.$router.push('/room') 
           })
         } else if (result.dismiss === Swal.DismissReason.cancel) { // call reject request API
             const APPLY_ROOM_REQ_URL = Vue.prototype.$serverIp + '/room/applyRoom/status'

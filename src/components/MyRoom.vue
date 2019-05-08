@@ -47,10 +47,6 @@
           <option value="20">여성</option>
         </select>
       </div>
-      <div class="form-group col-xs-6">
-        <label for="openUrl">오픈채팅 URL</label>
-        <input type="text" class="form-control" :disabled='isDisabled' v-model="myRoom.openUrl" placeholder="오픈채팅 텍스트">
-      </div>
       <div class="form-group">
         <label for="intro">소개</label>
         <textarea class="form-control" v-model="myRoom.intro" :disabled='isDisabled' aria-label="With textarea">소개를 입력하세요...</textarea>
@@ -94,8 +90,8 @@ export default {
         ageMin: '',
         gender: '',
         region: '',
-        openUrl: '',
         intro: '',
+				openUrl: 'asd',
         myRoomRequesterList: []
       }
     }
@@ -145,7 +141,6 @@ export default {
           this.myRoom.ageMax = resultObj.ageMax
           this.myRoom.gender = resultObj.gender
           this.myRoom.price = resultObj.price
-          this.myRoom.openUrl = resultObj.openUrl
           this.myRoom.intro = resultObj.intro
         } // if
       })
@@ -197,6 +192,11 @@ export default {
         reverseButtons: false
       }).then((result) => {
         if (result.value) { //call accept request API
+					let invalidatedField = this.invalidatedField()
+					if (invalidatedField.length > 0) {
+						this.validationPopup(invalidatedField)
+						return
+					} 
           const CREATE_MY_ROOM_URI = Vue.prototype.$serverIp + '/room/'
 
           axios.post(CREATE_MY_ROOM_URI, this.myRoom).then((res) => {
@@ -254,7 +254,6 @@ export default {
         cancelButtonClass: 'btn btn-danger',
         buttonsStyling: false
       })
-
       swalWithBootstrapButtons.fire({
         title: '방 정보 수정하기',
         text: '방 정보 수정하시겠습니까?',
@@ -265,6 +264,11 @@ export default {
         reverseButtons: false
       }).then((result) => {
         if (result.value) { //call accept request API
+					let invalidatedField = this.invalidatedField()
+					if (invalidatedField.length > 0) {
+						this.validationPopup(invalidatedField)
+						return
+					} 
           axios.put(EDIT_MY_ROOM_URI, this.myRoom).then((res) => {
             if (res.data.statusCode === '200') {
               swalWithBootstrapButtons.fire({
@@ -350,22 +354,59 @@ export default {
           }
         })
     },
-    refreshPage () {
-      this.$router.go(0)
-    },
     getRequestMemberInfo (memberId, requestStatus) {
-      /*console.log('getRequestMemberInfo...')
-      console.log('memberId... : ' + memberId)
-      console.log('requestStatus... : ' + requestStatus)
-      console.log('before this.$store.state.requestStatus... : ' + this.$store.state.requestStatus)
-      console.log('before this.$store.state.isMyRoomRequestMember... : ' + this.$store.state.isMyRoomRequestMember)
-      console.log('after this.$store.state.requestStatus... : ' + this.$store.state.requestStatus)
-      console.log('after this.$store.state.isMyRoomRequestMember... : ' + this.$store.state.isMyRoomRequestMember)*/
-
       this.$store.state.requestStatus = requestStatus
       this.$store.state.isMyRoomRequestMember = true
       this.$router.push('/member/' + memberId)
-    }
+    },
+	  invalidatedField() {
+			this.myRoom.openUrl = 'openUrl'
+			let fieldName = ''
+			if (!this.myRoom.title) {
+				fieldName = '제목'
+				console.log('myRoom.title is empty...')
+			}	else if (!this.myRoom.maxMemberNum) {
+				fieldName = '최대인원'
+				console.log('myRoom.maxMemberNum is empty...')
+			} else if (!this.myRoom.price) {
+				fieldName = '가격'
+				console.log('myRoom.price is empty...')
+			} else if (!this.myRoom.ageMax) {
+				fieldName = '최대나이'
+				console.log('myRoom.title is empty...')
+			} else if (!this.myRoom.ageMin) {
+				fieldName = '최소나이'
+				console.log('myRoom.title is empty...')
+			} else if (!this.myRoom.gender) {
+				fieldName = '성별'
+				console.log('myRoom.title is empty...')
+			} else if (!this.myRoom.region) {
+				fieldName = '지역'
+				console.log('region.title is empty...')
+			} else if (!this.myRoom.intro) {
+				fieldName = '소개'
+				console.log('intro.title is empty...')
+			} else if (!this.myRoom.regDate) {
+				fieldName = '만나는 시간'
+				console.log('intro.regDate is empty...')
+			}
+			return fieldName
+		},
+		validationPopup (fieldName) {
+      const Swal = require('sweetalert2')
+      const swalWithBootstrapButtons = Swal.mixin({
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: false
+      })
+      swalWithBootstrapButtons.fire({
+        position: 'center',
+        type: 'error',
+        title: fieldName + '은(는) 필수 입력항목입니다.',
+        showConfirmButton: false,
+        timer: 1500
+      })
+		}
   },
   components: {
     'NaviBar': NaviBar

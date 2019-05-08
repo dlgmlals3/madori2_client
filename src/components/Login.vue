@@ -41,11 +41,11 @@ export default {
   	},
   	greeting : {
   		type: String,
-  		default() { return "GNJ" }
+  		default() { return "가치먹자" }
   	},
   	datenow : {
   		type: String,
-  		default() { return "1986-10-01" }
+  		default() { return "2019-05-06" }
   	},
   },
   data () {
@@ -80,7 +80,6 @@ export default {
       });
     },
     onSuccess(authObj) {
-        console.log('authObj : ' + JSON.stringify(authObj))
         const router = this.$router
         const member = this.member
         const component = this
@@ -140,11 +139,9 @@ export default {
         member.thumbnailImage = ''
       }
       if(member.ageRange === false ){
-        console.log('member.ageRange === false')
         member.ageRange = 'unknown'
       }
       if(member.gender === false ){
-        console.log('member.gender === false')
         member.gender = 'unknown'
       }
 

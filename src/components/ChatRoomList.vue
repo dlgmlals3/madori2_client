@@ -43,8 +43,6 @@ export default {
         const resultObj = res.data
         this.chatRoomList = resultObj.resultItems
         this.total = resultObj.total
-				console.log('chatRoomList : ' + JSON.stringify(this.chatRoomList))
-				console.log('chatRoomList : ' + this.chatRoomList)
       })
     }
   },

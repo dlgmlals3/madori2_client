@@ -18,6 +18,7 @@ export const store = new Vuex.Store({
     memberId: '',
     appliedRoomList: [],
     maxApplyCount: 3,
+		chatRooms: {},
     member: {
       kakaoId: '',
       nickName: '',
@@ -45,6 +46,9 @@ export const store = new Vuex.Store({
     },
     getIsEditable: state => {
       return state.isEditable
+    },
+    getChatRooms: state => {
+      return state.chatRooms
     }
   },
   mutations: {
@@ -70,6 +74,9 @@ export const store = new Vuex.Store({
     },
     setIsEditable: function(state, payload) {
       state.isEditable = payload
+    },
+    setChatRooms: function(state, payload) {
+      state.chatRooms[payload.roomKey] = payload.msg
     }
   }
 

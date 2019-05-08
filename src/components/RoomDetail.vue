@@ -31,10 +31,6 @@
       <div class="col-sm-8" style="background-color:lavenderblush;">{{room.price}} 원</div>
     </div>
     <div class="row detailDiv">
-      <div class="col-sm-4" style="background-color:lavender;">openUrl</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.openUrl}}</div>
-    </div>
-    <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">소개</div>
       <div class="col-sm-8" style="background-color:lavenderblush;">{{room.intro}}</div>
     </div>
@@ -44,7 +40,7 @@
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">최대 나이</div>
-      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.ageMin}} 세</div>
+      <div class="col-sm-8" style="background-color:lavenderblush;">{{room.ageMax}} 세</div>
     </div>
     <div class="row detailDiv">
       <div class="col-sm-4" style="background-color:lavender;">최대인원</div>
@@ -56,7 +52,7 @@
           카카오아이디 : {{requester.memberId.kakaoId}}, 닉네임 : {{requester.memberId.nickName}}, 신청상태 : {{requester.requestStatus}}
         </li>
     </ul>
-    <button class="btn btn-primary" :disabled="isDisabled" @click="applyRoom" > 가치 놀자고 연락하고 싶어 </button>
+    <button class="btn btn-primary" :disabled="isDisabled" @click="applyRoom" > 가치 먹자고 연락하고 싶어 </button>
     <button @click="$router.push('/room/')" class="btn btn-primary"> 목록으로 돌아가기 </button>
     </div>
 </template>
@@ -89,7 +85,6 @@ export default {
         ageMin: '',
         gender: '',
         region: '',
-        openUrl: '',
         intro: '',
         registDate: '',
         myRoomRequesterList: [],
@@ -121,7 +116,6 @@ export default {
           this.room.ageMax = room.ageMax
           this.room.gender = room.gender
           this.room.price = room.price
-          this.room.openUrl = room.openUrl
           this.room.intro = room.intro
           
           // added 190220

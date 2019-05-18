@@ -10,7 +10,7 @@
  		<font color="black"> <h3> {{ datenow }} </h3></font>
     </div>
     <div id="kakao-login-btn" v-on:click=kakaoLogin >
-       <img :src="kakaotalkPicture" width="350" height="50"/>
+       <!-- <img :src="kakaotalkPicture" width="350" height="50"/> -->
 			 <a href="https://kauth.kakao.com/oauth/authorize?client_id=50aefcaff7f2522cd11eee31a319bb37&redirect_uri=http://218.38.52.30:8082/myRoom&response_type=code">
 			 kakao login
 			 </a>

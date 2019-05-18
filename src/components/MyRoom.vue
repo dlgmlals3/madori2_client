@@ -63,6 +63,7 @@
     </form>
   </div>
 </template>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
 
 <script>
 import Vue from 'vue'
@@ -104,22 +105,87 @@ export default {
   watch:{
   },
   mounted () {
-    let memberId = this.$store.state.memberId
-    this.getMyRoomInfo(memberId)
-    this.getRequesterList(memberId)
+		const component = this
+    //let memberId = this.$store.state.memberId
+    //this.getMyRoomInfo(memberId)
+    //this.getRequesterList(memberId)
+		let accessToken = this.$store.state.accessToken
+		let code = this.$route.query.code
+		let memberId = this.$store.state.memberId
+		console.log('code : ' + code)
+		console.log('memberId : ' + memberId)
+
+
+		if (code != undefined) {
+			let TOKEN_REQUEST = 'https://kauth.kakao.com/oauth/token'
+			let payload = 'grant_type=authorization_code&client_id=50aefcaff7f2522cd11eee31a319bb37&redirect_uri=http://218.38.52.30:8082/myRoom&code=' + code
+
+			axios.post(TOKEN_REQUEST, payload).then(res => {
+				let status = res.status
+				if(status === 200) {
+					component.$store.state.accessToken = res.data.access_token
+					component.$store.state.refreshToken = res.data.refresh_token
+					component.$store.state.expiresIn = res.data.expires_in
+				}
+				console.log('this store access token : ' + this.$store.state.accessToken)
+				console.log('this store refresh token : ' + this.$store.state.refreshToken)
+				console.log('this store expires : ' + this.$store.state.expiresIn)
+				component.setMemberInfo(this.$store.state.accessToken)
+				component.getMyRoomInfo(this.$store.state.memberId)
+		})
+		} else {	// do nothing
+			console.log('accessToken not ===')
+			component.getMyRoomInfo(memberId)
+		}
   },
   updated() {
     
   },
   methods: {
+		setMemberInfo (accessToken) {
+			let MEMBER_INFO_REQUEST = Vue.prototype.$serverIp + '/kakao/member/' + accessToken
+      let GET_MEMBER_INFO_URI = Vue.prototype.$serverIp + '/member/'
+      let GET_ROOM_INFO_URI = Vue.prototype.$serverIp + '/room/'
+      const router = this.$router
+      const member = {} 
+      const component = this
+
+			axios.get(MEMBER_INFO_REQUEST).then((res) => {
+				console.log('res : ' + JSON.stringify(res))
+      	const memberProperties = res.data.properties
+        const memberKakaoAccount = res.data.kakao_account
+
+        member['kakaoId'] = res.data.id
+        member['nickName'] = memberProperties.nickname
+        member['profileImage'] = memberProperties.profile_image
+        member['thumbnailImag'] = memberProperties.thumbnail_image
+        member['ageRange'] = memberKakaoAccount.has_age_range
+        member['gender'] = memberKakaoAccount.has_gender
+				console.log('kakaoId : ' + member.kakaoId)
+				console.log('nickName : ' + member.nickName)
+
+        component.removeNullMemberInfo(member)
+        axios.post(GET_MEMBER_INFO_URI, member).then((res) => {
+              //component.$store.state.roomId = res.data.roomId
+          component.$store.state.memberId = res.data.memberId
+
+          axios.get(GET_ROOM_INFO_URI + res.data.memberId).then((res) => {
+            if(res.data.total === '0' ){
+
+            } else {
+              component.$store.state.roomId = res.data.resultItems._id
+							component.getMyRoomInfo(component.$store.state.memberId)
+            }
+                
+          })
+
+        })
+			})
+		},
     getMyRoomInfo (memberId) {
-      this.myRoom.memberId = memberId
-      this.$store.state.memberId = memberId
-      const MY_ROOM_INFO_REQUEST = Vue.prototype.$serverIp + '/room/' + memberId
-      this.isExist = this.$store.state.isExist
-      this.isEditable = this.$store.state.isEditable
-      
-      axios.get(MY_ROOM_INFO_REQUEST).then((res) => {
+      let GET_ROOM_INFO_URI = Vue.prototype.$serverIp + '/room/'
+			console.log('getMyRoomInfo, memberId : ' + memberId)
+      axios.get(GET_ROOM_INFO_URI + memberId).then((res) => {
         const total = res.data.total
         const resultObj = res.data.resultItems
         const statusCode = res.data.statusCode
@@ -196,8 +262,9 @@ export default {
 					if (invalidatedField.length > 0) {
 						this.validationPopup(invalidatedField)
 						return
-					} 
+					}
           const CREATE_MY_ROOM_URI = Vue.prototype.$serverIp + '/room/'
+					this.myRoom.memberId = this.$store.state.memberId
 
           axios.post(CREATE_MY_ROOM_URI, this.myRoom).then((res) => {
             if (res.data.statusCode === '200') {
@@ -205,12 +272,6 @@ export default {
 							let nickName = this.$store.state.member.nickName
 							this.$store.state.roomId = roomId
 							
-							console.log('JOIN_ROOM emit start... roomId : ' + roomId)
-							console.log('JOIN_ROOM emit start... this.$store.state.roomId : ' + this.$store.state.roomId)
-              socket.emit('JOIN_ROOM', {
-								roomId : roomId,
-								nickName : nickName
-							})
               swalWithBootstrapButtons.fire({
                 position: 'center',
                 type: 'success',
@@ -406,6 +467,23 @@ export default {
         showConfirmButton: false,
         timer: 1500
       })
+		},
+		removeNullMemberInfo(member){
+      if(member.nickName === undefined ){
+        member.nickName = ''
+      }
+      if(member.profileImage === undefined ){
+        member.profileImage = ''
+      }
+      if(member.thumbnailImage === undefined ){
+        member.thumbnailImage = ''
+      }
+      if(member.ageRange === false ){
+        member.ageRange = 'unknown'
+      }
+      if(member.gender === false ){
+        member.gender = 'unknown'
+      }
 		}
   },
   components: {

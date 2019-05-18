@@ -11,6 +11,9 @@
     </div>
     <div id="kakao-login-btn" v-on:click=kakaoLogin >
        <img :src="kakaotalkPicture" width="350" height="50"/>
+			 <a href="https://kauth.kakao.com/oauth/authorize?client_id=50aefcaff7f2522cd11eee31a319bb37&redirect_uri=http://218.38.52.30:8082/myRoom&response_type=code">
+			 kakao login
+			 </a>
     </div>
   </div>
 </template>
@@ -90,9 +93,8 @@ export default {
             const GET_MEMBER_INFO_URI = Vue.prototype.$serverIp + '/member/'
             const GET_ROOM_INFO_URI = Vue.prototype.$serverIp + '/room/'
             
-            let memberProperties = res.properties
-            let memberKakaoAccount = res.kakao_account
-
+            const memberProperties = res.properties
+            const memberKakaoAccount = res.kakao_account
 
             member.kakaoId = res.id
             member.nickName = memberProperties.nickname
@@ -105,7 +107,6 @@ export default {
 
             // set member info
             component.$store.commit('setMemberInfo', member)
-
 
             axios.post(GET_MEMBER_INFO_URI, member).then((res) => {
               //component.$store.state.roomId = res.data.roomId

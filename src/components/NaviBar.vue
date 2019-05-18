@@ -49,13 +49,7 @@
       <input type="text" class="form-control" v-model="naviMemberId">
     </li>
     <li>
-      <button type="button" class="btn btn-primary" @click="setMemberId">Set MemberId</button>
-    </li>
-    <li>
-      현재 memberId : {{memberIdText}}
-    </li>
-    <li>
-      현재 roomId : {{roomId}}
+      <button type="button" class="btn btn-primary" @click="showIds">Show Ids</button>
     </li>
     <li>
       <router-link :to="'/applyRoom/' + storedMemberId">내가 신청한 방보기 내 member 정보로</router-link>
@@ -99,37 +93,51 @@ export default {
         roomId: '',
       }
     },
-  created() {
+  mounted() {
     this.storedMemberId = this.$store.state.memberId
     this.roomId = this.$store.state.roomId
-    this.getMemberId()
   },
   methods: {
-    setMemberId () {
-      this.$store.state.memberId = this.naviMemberId
-    },
-    getMemberId () {
-      this.memberIdText = this.$store.state.memberId
-    },
+		showIds() {
+    	let memberId = this.$store.state.memberId
+    	let roomId = this.$store.state.roomId
+    	let accessToken = this.$store.state.accessToken
+			console.log('memberId : ' + memberId)
+			console.log('roomId : ' + roomId)
+			console.log('accessToken : ' + accessToken)
+		},
     logout () {
       const router = this.$router
-  	  /*Kakao.Auth.logout(
-        function(data) { 
-            alert('로그아웃 되었습니다.')
-            Kakao.Auth.cleanup()
-            router.push('/')
-         }
-      )*/
-      Kakao.API.request({
-          url: '/v1/user/logout',
-          success: function(res) {
-            alert("로그아웃 성공 ")
-            router.push('/')
-          },
-          fail: function(error) {
-            alert('로그아웃 실패 : ' + JSON.stringify(error))
-          }
-	      });
+			let accessToken = this.$store.state.access_token
+			let LOGOUT_REQUEST = Vue.prototype.$serverIp + '/logout/' + accessToken
+			axios.get(LOGOUT_REQUEST).then((res) => {
+				const jsonObj = res
+				alert('jsonObj : ' + JSON.stringify(jsonObj))
+				this.$store.state.access_token = ''
+				this.$store.state.refresh_token = ''
+				router.push('/')
+			})
+
+			/*const LOGOUT_REQUEST = 'https://kapi.kakao.com/v1/user/logout'
+			let access_token = this.$store.state.access_token
+			console.log('access_token : ' + access_token)
+			const config = {
+				headers :{
+						'Authorization' : 'Bearer ' + access_token,
+					  'Access-Control-Allow-Origin' : '*',
+  					'Access-Control-Allow-Methods' : 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
+					 	'Access-Control-Allow-Headers' : 'Origin, X-Requested-With, Content-Type, Accept',
+					  'Access-Control-Allow-Credentials' : true
+				}
+			}
+			console.log('config : ' + JSON.stringify(config))
+
+			axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token
+			axios.post(LOGOUT_REQUEST).then(res => {
+				//console.log('res : ' + JSON.stringify(res))
+				alert('res : ' + JSON.stringify(res))
+        router.push('/')
+			})*/
     }
   }
 }

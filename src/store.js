@@ -23,10 +23,12 @@ export const store = new Vuex.Store({
       kakaoId: '',
       nickName: '',
       profileImage: '',
-      thumbnailImage: '',
       ageRange: '',
       gender: ''
-    }
+    },
+		accessToken : '',
+		refreshToken : '',
+		expiresIn : ''
   },
   getters: {
     getRoomId: state => {
